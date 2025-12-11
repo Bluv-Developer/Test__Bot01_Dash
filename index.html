@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebDDC v1.2 | Command Center</title>
+    <title>Bot Test 01 | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -46,12 +46,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
-        /* Modal & Toast Animations */
-        .modal-enter { opacity: 0; transform: scale(0.95); }
-        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.2s ease-out; }
-        .modal-exit { opacity: 1; transform: scale(1); }
-        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: all 0.2s ease-in; }
-
+        /* Animations */
         .toast-slide { transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .toast-slide.active { transform: translateX(0); }
 
@@ -63,6 +58,7 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden text-slate-300">
@@ -70,30 +66,27 @@
     <!-- SIDEBAR -->
     <aside class="w-20 lg:w-64 glass border-r-0 border-r border-white/5 flex flex-col transition-all duration-300 z-20">
         <div class="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-white/5">
-            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <i class="fa-solid fa-bolt text-white text-sm"></i>
+            <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <i class="fa-solid fa-satellite-dish text-white text-sm"></i>
             </div>
-            <span class="ml-3 font-bold text-lg tracking-tight text-white hidden lg:block">WebDDC<span class="text-blue-400">1.2</span></span>
+            <span class="ml-3 font-bold text-lg tracking-tight text-white hidden lg:block">WebDDC<span class="text-purple-400">1.9</span></span>
         </div>
 
         <nav class="flex-1 p-3 space-y-2 overflow-y-auto">
-            <div class="text-xs font-bold text-slate-500 uppercase px-3 mb-2 mt-4 hidden lg:block">Modules</div>
+            <div class="text-xs font-bold text-slate-500 uppercase px-3 mb-2 mt-4 hidden lg:block">Control Panel</div>
             
-            <button class="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 transition-all group relative">
-                <i class="fa-solid fa-shield-halved text-lg w-6 text-center"></i>
-                <span class="font-medium hidden lg:block">Moderation</span>
-                <div class="absolute left-0 w-1 h-8 bg-blue-500 rounded-r-full"></div>
+            <button class="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 transition-all group relative">
+                <i class="fa-solid fa-gamepad text-lg w-6 text-center"></i>
+                <span class="font-medium hidden lg:block">Dashboard</span>
+                <div class="absolute left-0 w-1 h-8 bg-purple-500 rounded-r-full"></div>
             </button>
             
-            <button class="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all group">
-                <i class="fa-solid fa-list-check text-lg w-6 text-center group-hover:text-emerald-400 transition-colors"></i>
-                <span class="font-medium hidden lg:block">Audit Logs</span>
-            </button>
-            
-            <button class="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all group">
-                <i class="fa-solid fa-chart-pie text-lg w-6 text-center group-hover:text-purple-400 transition-colors"></i>
-                <span class="font-medium hidden lg:block">Statistics</span>
-            </button>
+            <div class="border-t border-white/5 my-2"></div>
+
+            <div class="px-3 py-2 text-xs text-slate-500 hidden lg:block">
+                <p>Status: <span class="text-emerald-400">Connected</span></p>
+                <p>Latency: <span class="font-mono">24ms</span></p>
+            </div>
         </nav>
 
         <div class="p-4 border-t border-white/5">
@@ -102,8 +95,8 @@
                     <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                 </div>
                 <div class="hidden lg:block">
-                    <div class="text-xs font-bold text-emerald-400">System Online</div>
-                    <div class="text-[10px] text-slate-500 mono">v1.2.0-stable</div>
+                    <div class="text-xs font-bold text-emerald-400">System Ready</div>
+                    <div class="text-[10px] text-slate-500 mono">Bot v1.9 Active</div>
                 </div>
             </div>
         </div>
@@ -112,21 +105,18 @@
     <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col relative overflow-hidden">
         <!-- Background Decor -->
-        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- Header -->
         <header class="h-16 glass border-b border-white/5 flex items-center justify-between px-8 z-10">
             <h2 class="text-white font-semibold flex items-center gap-2">
                 <i class="fa-solid fa-terminal text-slate-500 text-sm"></i>
-                Dashboard
+                Command Interface
             </h2>
             <div class="flex items-center gap-4">
-                <div class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center gap-2">
-                    <i class="fa-solid fa-link"></i> Secure Tunnel
-                </div>
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 border border-slate-500 flex items-center justify-center shadow-lg">
-                    <i class="fa-solid fa-user text-xs text-white"></i>
+                <div class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs font-mono flex items-center gap-2">
+                    PHS Tunnel Active
                 </div>
             </div>
         </header>
@@ -134,154 +124,188 @@
         <!-- Scrollable Content -->
         <div class="flex-1 overflow-y-auto p-4 lg:p-8 z-10 scroll-smooth">
             
-            <!-- SECTION 1: USER MANAGEMENT -->
+            <!-- 1. USER MODERATION -->
             <div class="mb-8">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1">User Actions</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1 border-l-2 border-red-500 pl-3">User Moderation</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Kick -->
-                    <div onclick="openModal('KICK')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-user-minus text-5xl"></i></div>
-                        <div class="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-user-minus"></i></div>
+                    <div onclick="openModal('KICK')" class="glass-card rounded-xl p-5 cursor-pointer group hover:bg-red-500/5">
+                        <div class="flex justify-between items-start">
+                            <div class="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center mb-3"><i class="fa-solid fa-user-minus"></i></div>
+                            <span class="text-[10px] bg-slate-800 px-2 py-1 rounded text-slate-400">MOD</span>
+                        </div>
                         <h4 class="text-white font-bold">Kick User</h4>
-                        <p class="text-xs text-slate-500 mt-1">Remove a user from server.</p>
+                        <p class="text-xs text-slate-500 mt-1">Remove user from server.</p>
                     </div>
                     <!-- Ban -->
-                    <div onclick="openModal('BAN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-gavel text-5xl"></i></div>
-                        <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-gavel"></i></div>
+                    <div onclick="openModal('BAN')" class="glass-card rounded-xl p-5 cursor-pointer group hover:bg-red-500/5">
+                        <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center mb-3"><i class="fa-solid fa-gavel"></i></div>
                         <h4 class="text-white font-bold">Ban User</h4>
                         <p class="text-xs text-slate-500 mt-1">Permanently ban user.</p>
                     </div>
                     <!-- Unban -->
-                    <div onclick="openModal('UNBAN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-handshake text-5xl"></i></div>
-                        <div class="w-10 h-10 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-unlock"></i></div>
+                    <div onclick="openModal('UNBAN')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center mb-3"><i class="fa-solid fa-unlock"></i></div>
                         <h4 class="text-white font-bold">Unban User</h4>
-                        <p class="text-xs text-slate-500 mt-1">Revoke a previous ban.</p>
+                        <p class="text-xs text-slate-500 mt-1">Revoke a ban via ID.</p>
                     </div>
                     <!-- Softban -->
-                    <div onclick="openModal('SOFTBAN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-eraser text-5xl"></i></div>
-                        <div class="w-10 h-10 rounded-lg bg-pink-500/10 text-pink-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-user-slash"></i></div>
+                    <div onclick="openModal('SOFTBAN')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-pink-500/10 text-pink-500 flex items-center justify-center mb-3"><i class="fa-solid fa-eraser"></i></div>
                         <h4 class="text-white font-bold">Softban</h4>
-                        <p class="text-xs text-slate-500 mt-1">Ban & Unban to clear msgs.</p>
+                        <p class="text-xs text-slate-500 mt-1">Ban/Unban to clear chats.</p>
                     </div>
                     <!-- Warn -->
-                    <div onclick="openModal('WARN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
-                        <div class="w-10 h-10 rounded-lg bg-yellow-500/10 text-yellow-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div onclick="openModal('WARN')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-yellow-500/10 text-yellow-500 flex items-center justify-center mb-3"><i class="fa-solid fa-triangle-exclamation"></i></div>
                         <h4 class="text-white font-bold">Warn User</h4>
-                        <p class="text-xs text-slate-500 mt-1">Send a DM warning.</p>
+                        <p class="text-xs text-slate-500 mt-1">Send warning DM.</p>
                     </div>
-                    <!-- DM -->
-                    <div onclick="openModal('DM')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-envelope"></i></div>
-                        <h4 class="text-white font-bold">Direct Message</h4>
-                        <p class="text-xs text-slate-500 mt-1">Send an official bot DM.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION 2: STATUS & ROLES -->
-            <div class="mb-8">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1">Status & Roles</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Timeout -->
                     <div onclick="openModal('TIMEOUT')" class="glass-card rounded-xl p-5 cursor-pointer group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-hourglass-half text-yellow-400"></i>
-                            <h4 class="text-white font-bold">Timeout</h4>
-                        </div>
-                        <p class="text-xs text-slate-500">Mute user for duration.</p>
+                        <div class="w-10 h-10 rounded-lg bg-yellow-600/10 text-yellow-500 flex items-center justify-center mb-3"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <h4 class="text-white font-bold">Timeout</h4>
+                        <p class="text-xs text-slate-500 mt-1">Mute user temporarily.</p>
                     </div>
-                    <!-- Untimeout -->
-                    <div onclick="openModal('UNTIMEOUT')" class="glass-card rounded-xl p-5 cursor-pointer group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-hourglass text-emerald-400"></i>
-                            <h4 class="text-white font-bold">Remove Timeout</h4>
-                        </div>
-                        <p class="text-xs text-slate-500">Unmute a user early.</p>
+                     <!-- Untimeout -->
+                     <div onclick="openModal('UNTIMEOUT')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-600/10 text-emerald-500 flex items-center justify-center mb-3"><i class="fa-solid fa-hourglass-start"></i></div>
+                        <h4 class="text-white font-bold">Remove Timeout</h4>
+                        <p class="text-xs text-slate-500 mt-1">Unmute user early.</p>
                     </div>
                     <!-- Nickname -->
                     <div onclick="openModal('NICKNAME')" class="glass-card rounded-xl p-5 cursor-pointer group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-tag text-blue-400"></i>
-                            <h4 class="text-white font-bold">Change Nickname</h4>
-                        </div>
-                        <p class="text-xs text-slate-500">Force update user display name.</p>
-                    </div>
-                    <!-- Add Role -->
-                    <div onclick="openModal('ROLE_ADD')" class="glass-card rounded-xl p-5 cursor-pointer group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-plus-circle text-emerald-400"></i>
-                            <h4 class="text-white font-bold">Add Role</h4>
-                        </div>
-                        <p class="text-xs text-slate-500">Assign role via ID.</p>
-                    </div>
-                    <!-- Remove Role -->
-                    <div onclick="openModal('ROLE_REMOVE')" class="glass-card rounded-xl p-5 cursor-pointer group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-minus-circle text-red-400"></i>
-                            <h4 class="text-white font-bold">Remove Role</h4>
-                        </div>
-                        <p class="text-xs text-slate-500">Revoke role via ID.</p>
+                        <div class="w-10 h-10 rounded-lg bg-blue-600/10 text-blue-500 flex items-center justify-center mb-3"><i class="fa-solid fa-tag"></i></div>
+                        <h4 class="text-white font-bold">Set Nickname</h4>
+                        <p class="text-xs text-slate-500 mt-1">Change display name.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION 3: CHANNEL CONTROLS -->
+            <!-- 2. VOICE OPERATIONS (NEW V1.9) -->
             <div class="mb-8">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1">Channel Controls</h3>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1 border-l-2 border-purple-500 pl-3">Voice Operations</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- V Mute -->
+                    <div onclick="openModal('VMUTE')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center mb-3"><i class="fa-solid fa-microphone-slash"></i></div>
+                        <h4 class="text-white font-bold">Voice Mute</h4>
+                        <p class="text-xs text-slate-500 mt-1">Server mute user.</p>
+                    </div>
+                    <!-- V Unmute -->
+                    <div onclick="openModal('VUNMUTE')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center mb-3"><i class="fa-solid fa-microphone"></i></div>
+                        <h4 class="text-white font-bold">Voice Unmute</h4>
+                        <p class="text-xs text-slate-500 mt-1">Remove server mute.</p>
+                    </div>
+                    <!-- V Deafen -->
+                    <div onclick="openModal('VDEAFEN')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center mb-3"><i class="fa-solid fa-ear-deaf"></i></div>
+                        <h4 class="text-white font-bold">Deafen</h4>
+                        <p class="text-xs text-slate-500 mt-1">Prevent user hearing.</p>
+                    </div>
+                    <!-- V Disconnect -->
+                    <div onclick="openModal('VDISCONNECT')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-slate-700/50 text-slate-300 flex items-center justify-center mb-3"><i class="fa-solid fa-phone-slash"></i></div>
+                        <h4 class="text-white font-bold">Disconnect</h4>
+                        <p class="text-xs text-slate-500 mt-1">Kick from voice channel.</p>
+                    </div>
+                    <!-- V Move -->
+                    <div onclick="openModal('VMOVE')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center mb-3"><i class="fa-solid fa-share-from-square"></i></div>
+                        <h4 class="text-white font-bold">Move User</h4>
+                        <p class="text-xs text-slate-500 mt-1">Transfer to other VC.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CHANNEL MANAGEMENT -->
+            <div class="mb-8">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1 border-l-2 border-blue-500 pl-3">Channel Management</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Create Channel -->
+                    <div onclick="openModal('CREATE_CHANNEL')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-3"><i class="fa-solid fa-folder-plus"></i></div>
+                        <h4 class="text-white font-bold">Create Channel</h4>
+                        <p class="text-xs text-slate-500 mt-1">Make new text channel.</p>
+                    </div>
+                    <!-- Delete Channel -->
+                    <div onclick="openModal('DELETE_CHANNEL')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center mb-3"><i class="fa-solid fa-folder-minus"></i></div>
+                        <h4 class="text-white font-bold">Delete Channel</h4>
+                        <p class="text-xs text-slate-500 mt-1">Remove current channel.</p>
+                    </div>
                     <!-- Purge -->
-                    <div onclick="openModal('PURGE')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-red-500/50">
-                        <div class="flex justify-between">
-                            <div>
-                                <h4 class="text-white font-bold">Purge</h4>
-                                <p class="text-xs text-slate-500">Delete messages.</p>
-                            </div>
-                            <i class="fa-solid fa-trash-can text-slate-600 group-hover:text-red-400 transition-colors"></i>
-                        </div>
+                    <div onclick="openModal('PURGE')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-red-600/10 text-red-400 flex items-center justify-center mb-3"><i class="fa-solid fa-trash-can"></i></div>
+                        <h4 class="text-white font-bold">Purge</h4>
+                        <p class="text-xs text-slate-500 mt-1">Bulk delete messages.</p>
                     </div>
                     <!-- Lock -->
-                    <div onclick="openModal('LOCK')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-orange-500/50">
-                        <div class="flex justify-between">
-                            <div>
-                                <h4 class="text-white font-bold">Lock Channel</h4>
-                                <p class="text-xs text-slate-500">Prevent chatting.</p>
-                            </div>
-                            <i class="fa-solid fa-lock text-slate-600 group-hover:text-orange-400 transition-colors"></i>
-                        </div>
+                    <div onclick="openModal('LOCK')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-orange-600/10 text-orange-400 flex items-center justify-center mb-3"><i class="fa-solid fa-lock"></i></div>
+                        <h4 class="text-white font-bold">Lock</h4>
+                        <p class="text-xs text-slate-500 mt-1">Stop users sending.</p>
                     </div>
                     <!-- Unlock -->
-                    <div onclick="openModal('UNLOCK')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-green-500/50">
-                        <div class="flex justify-between">
-                            <div>
-                                <h4 class="text-white font-bold">Unlock Channel</h4>
-                                <p class="text-xs text-slate-500">Allow chatting.</p>
-                            </div>
-                            <i class="fa-solid fa-lock-open text-slate-600 group-hover:text-green-400 transition-colors"></i>
-                        </div>
+                    <div onclick="openModal('UNLOCK')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-green-600/10 text-green-400 flex items-center justify-center mb-3"><i class="fa-solid fa-lock-open"></i></div>
+                        <h4 class="text-white font-bold">Unlock</h4>
+                        <p class="text-xs text-slate-500 mt-1">Allow sending msgs.</p>
                     </div>
                     <!-- Slowmode -->
-                    <div onclick="openModal('SLOWMODE')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-blue-500/50">
-                        <div class="flex justify-between">
-                            <div>
-                                <h4 class="text-white font-bold">Slowmode</h4>
-                                <p class="text-xs text-slate-500">Set chat delay.</p>
-                            </div>
-                            <i class="fa-solid fa-gauge-simple text-slate-600 group-hover:text-blue-400 transition-colors"></i>
-                        </div>
+                    <div onclick="openModal('SLOWMODE')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-blue-600/10 text-blue-400 flex items-center justify-center mb-3"><i class="fa-solid fa-stopwatch"></i></div>
+                        <h4 class="text-white font-bold">Slowmode</h4>
+                        <p class="text-xs text-slate-500 mt-1">Set chat delay.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- RECENT ACTIVITY -->
+            <!-- 4. UTILITY & FUN -->
+            <div class="mb-8">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1 border-l-2 border-yellow-500 pl-3">Utility & Fun</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                     <!-- DM -->
+                     <div onclick="openModal('DM')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-3"><i class="fa-solid fa-paper-plane"></i></div>
+                        <h4 class="text-white font-bold">DM User</h4>
+                        <p class="text-xs text-slate-500 mt-1">Send private message.</p>
+                    </div>
+                     <!-- Say -->
+                     <div onclick="openModal('SAY')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center mb-3"><i class="fa-solid fa-comment-dots"></i></div>
+                        <h4 class="text-white font-bold">Bot Say</h4>
+                        <p class="text-xs text-slate-500 mt-1">Speak as bot in chat.</p>
+                    </div>
+                     <!-- Poll -->
+                     <div onclick="openModal('POLL')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-blue-400/10 text-blue-400 flex items-center justify-center mb-3"><i class="fa-solid fa-square-poll-vertical"></i></div>
+                        <h4 class="text-white font-bold">Create Poll</h4>
+                        <p class="text-xs text-slate-500 mt-1">Simple Yes/No poll.</p>
+                    </div>
+                     <!-- User Info -->
+                     <div onclick="openModal('USERINFO')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-slate-500/10 text-slate-400 flex items-center justify-center mb-3"><i class="fa-solid fa-address-card"></i></div>
+                        <h4 class="text-white font-bold">User Info</h4>
+                        <p class="text-xs text-slate-500 mt-1">Log user details.</p>
+                    </div>
+                     <!-- Set Status -->
+                     <div onclick="openModal('SET_STATUS')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="w-10 h-10 rounded-lg bg-green-400/10 text-green-400 flex items-center justify-center mb-3"><i class="fa-solid fa-eye"></i></div>
+                        <h4 class="text-white font-bold">Bot Status</h4>
+                        <p class="text-xs text-slate-500 mt-1">Set "Watching...".</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT ACTIVITY LOG -->
             <div class="glass rounded-xl p-6 border border-white/5">
                 <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Local Session Activity
+                    <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Transmission Log
                 </h3>
                 <div id="activity-list" class="space-y-2">
-                    <div class="text-slate-600 text-sm italic py-2">Waiting for commands...</div>
+                    <div class="text-slate-600 text-sm italic py-2">Waiting for outgoing signals...</div>
                 </div>
             </div>
 
@@ -308,46 +332,26 @@
             <!-- Modal Body -->
             <div class="p-6 space-y-4">
                 
-                <!-- ID Input (Dynamic Label) -->
-                <div>
-                    <label id="lbl-target-id" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Target User ID</label>
+                <!-- ID Input (Target) -->
+                <div id="container-target">
+                    <label id="lbl-target-id" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Target ID</label>
                     <div class="relative">
                         <span class="absolute left-4 top-3 text-slate-500 font-mono text-sm">#</span>
-                        <!-- CHANGED: input type="text" and inputmode="numeric" to prevent integer rounding issues -->
-                        <input type="text" inputmode="numeric" id="inp-target-id" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-8 pr-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" placeholder="e.g. 1448495701863694408">
+                        <input type="number" id="inp-target-id" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-8 pr-4 text-white font-mono text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 transition" placeholder="e.g. 1448495701863694408">
                     </div>
+                    <p class="text-[10px] text-slate-600 mt-1 ml-1" id="hint-target">Right click User/Channel -> Copy ID</p>
                 </div>
 
-                <!-- Dynamic Data Fields (Hidden by default) -->
-                
-                <!-- Duration (Minutes) -->
-                <div id="field-duration" class="hidden">
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Duration (Minutes)</label>
-                    <input type="number" id="inp-duration" value="60" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none">
+                <!-- Flexible Data Input (Seconds, Count, Channel Name, Nickname, etc) -->
+                <div id="container-data" class="hidden">
+                    <label id="lbl-data" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Value</label>
+                    <input type="text" id="inp-data" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white font-mono text-sm focus:border-purple-500 focus:outline-none">
                 </div>
 
-                <!-- Seconds (Slowmode) -->
-                <div id="field-seconds" class="hidden">
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Delay (Seconds)</label>
-                    <input type="number" id="inp-seconds" value="5" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none">
-                </div>
-
-                <!-- Amount (Purge) -->
-                <div id="field-amount" class="hidden">
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Message Count</label>
-                    <input type="number" id="inp-amount" value="10" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none">
-                </div>
-
-                <!-- String Input (Nickname, etc) -->
-                <div id="field-string" class="hidden">
-                    <label id="lbl-string" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Value</label>
-                    <input type="text" id="inp-string" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white text-sm focus:border-blue-500 focus:outline-none">
-                </div>
-
-                <!-- Reason / Message -->
-                <div id="field-reason">
-                    <label id="lbl-reason" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Reason / Details</label>
-                    <textarea id="inp-reason" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:border-blue-500 focus:outline-none h-24 resize-none" placeholder="Enter reason or message content..."></textarea>
+                <!-- Text Area (Reason, Message, Poll Question) -->
+                <div id="container-reason">
+                    <label id="lbl-reason" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Reason</label>
+                    <textarea id="inp-reason" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:border-purple-500 focus:outline-none h-24 resize-none" placeholder="Enter reason, message content, or details..."></textarea>
                 </div>
 
             </div>
@@ -355,9 +359,9 @@
             <!-- Modal Footer -->
             <div class="p-5 border-t border-slate-800 bg-slate-900/30 rounded-b-2xl flex justify-end gap-3">
                 <button onclick="closeModal()" class="px-5 py-2.5 text-sm font-medium text-slate-400 hover:text-white transition">Cancel</button>
-                <button onclick="submitCommand()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-600/20 transition flex items-center gap-2 transform active:scale-95">
+                <button onclick="submitCommand()" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-purple-600/20 transition flex items-center gap-2 transform active:scale-95">
                     <span>Execute</span>
-                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <i class="fa-solid fa-tower-broadcast text-xs"></i>
                 </button>
             </div>
         </div>
@@ -368,7 +372,7 @@
         <div class="spinner"></div>
         <div>
             <h4 class="text-white font-bold text-sm">Transmitting...</h4>
-            <div class="text-xs text-blue-400">Sending payload to Webhook</div>
+            <div class="text-xs text-blue-400">Uplink to PHS established</div>
         </div>
     </div>
 
@@ -377,33 +381,52 @@
             <i class="fa-solid fa-check"></i>
         </div>
         <div>
-            <h4 class="text-white font-bold text-sm">Success</h4>
-            <div class="text-xs text-emerald-400">Command received by PHS</div>
+            <h4 class="text-white font-bold text-sm">Signal Received</h4>
+            <div class="text-xs text-emerald-400">Command logged</div>
         </div>
     </div>
 
     <script>
         // --- CONFIGURATION ---
+        // REPLACE WITH YOUR ACTUAL DISCORD WEBHOOK URL
         const WEBHOOK_URL = 'https://discord.com/api/webhooks/1448507260266352684/Jj2Vi5QAKcA_mrVmBPzztIP7P9hucs7TGP7jm-J6M2BYMpD52RFo3qZA4tsSQ9qlKGr0';
         let currentCommand = '';
 
-        // --- COMMAND METADATA ---
+        // --- COMMAND METADATA MAP (v1.9) ---
+        // Defines visual look and expected input type for each command
         const COMMANDS = {
-            'KICK': { icon: 'fa-user-minus', color: 'bg-orange-500', title: 'Kick User', type: 'USER' },
-            'BAN': { icon: 'fa-gavel', color: 'bg-red-500', title: 'Ban User', type: 'USER' },
-            'UNBAN': { icon: 'fa-unlock', color: 'bg-green-500', title: 'Unban User', type: 'USER' },
-            'SOFTBAN': { icon: 'fa-eraser', color: 'bg-pink-500', title: 'Softban User', type: 'USER' },
-            'WARN': { icon: 'fa-triangle-exclamation', color: 'bg-yellow-500', title: 'Warn User', type: 'USER' },
-            'DM': { icon: 'fa-envelope', color: 'bg-indigo-500', title: 'Direct Message', type: 'USER' },
-            'TIMEOUT': { icon: 'fa-hourglass-half', color: 'bg-yellow-600', title: 'Timeout User', type: 'USER' },
-            'UNTIMEOUT': { icon: 'fa-hourglass', color: 'bg-emerald-600', title: 'Remove Timeout', type: 'USER' },
-            'NICKNAME': { icon: 'fa-tag', color: 'bg-blue-600', title: 'Change Nickname', type: 'USER' },
-            'ROLE_ADD': { icon: 'fa-plus-circle', color: 'bg-emerald-500', title: 'Add Role', type: 'USER' },
-            'ROLE_REMOVE': { icon: 'fa-minus-circle', color: 'bg-red-500', title: 'Remove Role', type: 'USER' },
-            'PURGE': { icon: 'fa-trash-can', color: 'bg-red-600', title: 'Purge Channel', type: 'CHANNEL' },
-            'LOCK': { icon: 'fa-lock', color: 'bg-orange-600', title: 'Lock Channel', type: 'CHANNEL' },
-            'UNLOCK': { icon: 'fa-lock-open', color: 'bg-green-600', title: 'Unlock Channel', type: 'CHANNEL' },
-            'SLOWMODE': { icon: 'fa-gauge-simple', color: 'bg-blue-600', title: 'Set Slowmode', type: 'CHANNEL' },
+            // User Mod
+            'KICK': { icon: 'fa-user-minus', color: 'bg-orange-500', title: 'Kick User', type: 'USER', needsData: false },
+            'BAN': { icon: 'fa-gavel', color: 'bg-red-500', title: 'Ban User', type: 'USER', needsData: false },
+            'UNBAN': { icon: 'fa-unlock', color: 'bg-green-500', title: 'Unban User', type: 'USER', needsData: false },
+            'SOFTBAN': { icon: 'fa-eraser', color: 'bg-pink-500', title: 'Softban User', type: 'USER', needsData: false },
+            'WARN': { icon: 'fa-triangle-exclamation', color: 'bg-yellow-500', title: 'Warn User', type: 'USER', needsData: false },
+            'TIMEOUT': { icon: 'fa-hourglass-half', color: 'bg-yellow-600', title: 'Timeout User', type: 'USER', needsData: true, dataLabel: 'Duration (Minutes)', defaultData: '60' },
+            'UNTIMEOUT': { icon: 'fa-hourglass-start', color: 'bg-emerald-600', title: 'Remove Timeout', type: 'USER', needsData: false },
+            'NICKNAME': { icon: 'fa-tag', color: 'bg-blue-600', title: 'Change Nickname', type: 'USER', needsData: true, dataLabel: 'New Nickname' },
+            
+            // Voice
+            'VMUTE': { icon: 'fa-microphone-slash', color: 'bg-red-500', title: 'Voice Mute', type: 'USER', needsData: false },
+            'VUNMUTE': { icon: 'fa-microphone', color: 'bg-green-500', title: 'Voice Unmute', type: 'USER', needsData: false },
+            'VDEAFEN': { icon: 'fa-ear-deaf', color: 'bg-orange-500', title: 'Voice Deafen', type: 'USER', needsData: false },
+            'VUNDEAFEN': { icon: 'fa-ear-listen', color: 'bg-green-500', title: 'Undeafen', type: 'USER', needsData: false },
+            'VDISCONNECT': { icon: 'fa-phone-slash', color: 'bg-slate-600', title: 'Voice Disconnect', type: 'USER', needsData: false },
+            'VMOVE': { icon: 'fa-share-from-square', color: 'bg-blue-500', title: 'Move Voice User', type: 'USER', needsData: true, dataLabel: 'Destination Channel ID' },
+            
+            // Channels
+            'CREATE_CHANNEL': { icon: 'fa-folder-plus', color: 'bg-emerald-500', title: 'Create Channel', type: 'SERVER', needsData: true, dataLabel: 'Channel Name', noTarget: true }, 
+            'DELETE_CHANNEL': { icon: 'fa-folder-minus', color: 'bg-red-500', title: 'Delete Channel', type: 'CHANNEL', needsData: false },
+            'PURGE': { icon: 'fa-trash-can', color: 'bg-red-600', title: 'Purge Messages', type: 'CHANNEL', needsData: true, dataLabel: 'Message Count', defaultData: '10' },
+            'LOCK': { icon: 'fa-lock', color: 'bg-orange-600', title: 'Lock Channel', type: 'CHANNEL', needsData: false },
+            'UNLOCK': { icon: 'fa-lock-open', color: 'bg-green-600', title: 'Unlock Channel', type: 'CHANNEL', needsData: false },
+            'SLOWMODE': { icon: 'fa-stopwatch', color: 'bg-blue-600', title: 'Set Slowmode', type: 'CHANNEL', needsData: true, dataLabel: 'Seconds', defaultData: '5' },
+            
+            // Fun/Utility
+            'DM': { icon: 'fa-paper-plane', color: 'bg-indigo-500', title: 'Direct Message', type: 'USER', needsData: false, reasonLabel: 'Message Content' },
+            'SAY': { icon: 'fa-comment-dots', color: 'bg-purple-500', title: 'Bot Say', type: 'CHANNEL', needsData: false, reasonLabel: 'Message Content' },
+            'POLL': { icon: 'fa-square-poll-vertical', color: 'bg-blue-400', title: 'Create Poll', type: 'CHANNEL', needsData: false, reasonLabel: 'Poll Question' },
+            'USERINFO': { icon: 'fa-address-card', color: 'bg-slate-500', title: 'Get User Info', type: 'USER', needsData: false },
+            'SET_STATUS': { icon: 'fa-eye', color: 'bg-green-400', title: 'Set Bot Status', type: 'SERVER', needsData: true, dataLabel: 'Status Text', noTarget: true }
         };
 
         // --- UI FUNCTIONS ---
@@ -411,59 +434,56 @@
             currentCommand = cmd;
             const meta = COMMANDS[cmd];
 
-            // 1. Hide ALL specific fields (start with field-)
-            document.querySelectorAll('[id^="field-"]').forEach(el => el.classList.add('hidden'));
-            
-            // 2. IMPORTANT: Explicitly UNHIDE the Reason field, because step 1 hid it!
-            document.getElementById('field-reason').classList.remove('hidden');
-
-            // Reset Input Values
+            // 1. Reset & Setup Base UI
             document.getElementById('inp-target-id').value = '';
             document.getElementById('inp-reason').value = '';
-            document.getElementById('inp-string').value = '';
-
-            // Set Header
+            document.getElementById('inp-data').value = '';
+            
             document.getElementById('modal-title').innerText = meta.title;
             document.getElementById('modal-icon').className = `fa-solid ${meta.icon} text-white`;
             document.getElementById('modal-icon-bg').className = `w-10 h-10 rounded-lg flex items-center justify-center shadow-lg ${meta.color}`;
 
-            // Configure ID Label
-            const idLabel = document.getElementById('lbl-target-id');
-            const idInput = document.getElementById('inp-target-id');
-            if (meta.type === 'CHANNEL') {
-                idLabel.innerText = "Target Channel ID";
-                idInput.placeholder = "e.g. 123456789 (Channel ID)";
+            // 2. Configure Target ID Field
+            const targetContainer = document.getElementById('container-target');
+            if (meta.noTarget) {
+                targetContainer.classList.add('hidden');
+                document.getElementById('inp-target-id').value = '0'; // Dummy value for server actions
             } else {
-                idLabel.innerText = "Target User ID";
-                idInput.placeholder = "e.g. 1448495701863694408";
+                targetContainer.classList.remove('hidden');
+                const lbl = document.getElementById('lbl-target-id');
+                const inp = document.getElementById('inp-target-id');
+                if (meta.type === 'CHANNEL') {
+                    lbl.innerText = "Target Channel ID";
+                    inp.placeholder = "e.g. 123456789 (Channel ID)";
+                } else {
+                    lbl.innerText = "Target User ID";
+                    inp.placeholder = "e.g. 1448495701863694408";
+                }
             }
 
-            // Configure Specific Fields
-            if (cmd === 'TIMEOUT') {
-                document.getElementById('field-duration').classList.remove('hidden');
-            } else if (cmd === 'PURGE') {
-                document.getElementById('field-amount').classList.remove('hidden');
-            } else if (cmd === 'SLOWMODE') {
-                document.getElementById('field-seconds').classList.remove('hidden');
-            } else if (cmd === 'NICKNAME') {
-                const f = document.getElementById('field-string');
-                f.classList.remove('hidden');
-                document.getElementById('lbl-string').innerText = "New Nickname";
-            } else if (cmd === 'ROLE_ADD' || cmd === 'ROLE_REMOVE') {
-                const f = document.getElementById('field-string');
-                f.classList.remove('hidden');
-                document.getElementById('lbl-string').innerText = "Role ID";
+            // 3. Configure Data Field (Dynamic)
+            const dataContainer = document.getElementById('container-data');
+            if (meta.needsData) {
+                dataContainer.classList.remove('hidden');
+                document.getElementById('lbl-data').innerText = meta.dataLabel;
+                if (meta.defaultData) document.getElementById('inp-data').value = meta.defaultData;
+            } else {
+                dataContainer.classList.add('hidden');
             }
 
-            // Reason Label Adjustment
+            // 4. Configure Reason Field (Dynamic)
             const reasonLbl = document.getElementById('lbl-reason');
-            if (cmd === 'DM') reasonLbl.innerText = "Message Content";
-            else reasonLbl.innerText = "Reason / Details";
+            if (meta.reasonLabel) {
+                reasonLbl.innerText = meta.reasonLabel;
+                document.getElementById('inp-reason').placeholder = "Type here...";
+            } else {
+                reasonLbl.innerText = "Reason / Audit Log";
+                document.getElementById('inp-reason').placeholder = "Enter reason for audit logs...";
+            }
 
-            // Show Modal
+            // 5. Show Modal
             const backdrop = document.getElementById('modal-backdrop');
             const content = document.getElementById('modal-content');
-            
             backdrop.classList.remove('hidden');
             setTimeout(() => {
                 content.classList.remove('opacity-0', 'scale-95');
@@ -474,54 +494,43 @@
         function closeModal() {
             const backdrop = document.getElementById('modal-backdrop');
             const content = document.getElementById('modal-content');
-            
             content.classList.remove('opacity-100', 'scale-100');
             content.classList.add('opacity-0', 'scale-95');
-            
-            setTimeout(() => {
-                backdrop.classList.add('hidden');
-            }, 200);
+            setTimeout(() => { backdrop.classList.add('hidden'); }, 200);
         }
 
-        // --- SUBMISSION ---
+        // --- SUBMISSION LOGIC ---
         async function submitCommand() {
+            const meta = COMMANDS[currentCommand];
             const targetId = document.getElementById('inp-target-id').value;
             const reason = document.getElementById('inp-reason').value;
+            const dataVal = document.getElementById('inp-data').value;
             
-            if (!targetId) {
+            // Validation
+            if (!meta.noTarget && !targetId) {
                 alert("Target ID is required");
                 return;
             }
 
-            // Gather Data
-            let extraData = null;
-            if (currentCommand === 'TIMEOUT') extraData = parseInt(document.getElementById('inp-duration').value);
-            else if (currentCommand === 'PURGE') extraData = parseInt(document.getElementById('inp-amount').value);
-            else if (currentCommand === 'SLOWMODE') extraData = parseInt(document.getElementById('inp-seconds').value);
-            else if (['NICKNAME', 'ROLE_ADD', 'ROLE_REMOVE'].includes(currentCommand)) extraData = document.getElementById('inp-string').value;
-
+            // Construct Payload matches Python Script keys
             const payload = {
                 command: currentCommand,
-                // CRITICAL FIX: Send ID as a String, NOT a Number (Int).
-                // Discord IDs (Snowflakes) are too large for JS integers and get corrupted.
-                target_id: targetId,
-                reason: reason || "No reason provided",
-                data: extraData
+                target_id: parseInt(targetId) || 0, // Python expects Integer
+                reason: reason || "No reason provided", // Captures the reason/message/poll question
+                data: dataVal || null // Captures duration/count/nickname/etc
             };
 
             closeModal();
             triggerToastSequence(payload);
         }
 
-        // --- TOAST LOGIC ---
+        // --- TOAST & WEBHOOK ---
         function triggerToastSequence(payload) {
             const tProcess = document.getElementById('toast-processing');
             const tSuccess = document.getElementById('toast-success');
 
-            // 1. Show Processing
             tProcess.classList.add('active');
 
-            // 2. Send Webhook
             sendWebhook(payload).then(() => {
                 setTimeout(() => {
                     tProcess.classList.remove('active');
@@ -530,10 +539,10 @@
                     logActivity(payload);
                     
                     setTimeout(() => tSuccess.classList.remove('active'), 3000);
-                }, 2000); // Fake 2s delay for "sleekness"
+                }, 1500); 
             }).catch(err => {
                 tProcess.classList.remove('active');
-                alert("Webhook Error: " + err);
+                alert("Webhook Failed: " + err);
             });
         }
 
@@ -542,9 +551,11 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    content: JSON.stringify(payload), // Send raw JSON as string inside content
-                    username: "WebDDC v1.2",
-                    avatar_url: "https://cdn-icons-png.flaticon.com/512/2910/2910768.png"
+                    // The Payload is sent as a string inside "content"
+                    // The Bot listens to message.content and parses it back to JSON
+                    content: JSON.stringify(payload), 
+                    username: "WebDDC v1.9 Console",
+                    avatar_url: "https://cdn-icons-png.flaticon.com/512/900/900782.png"
                 })
             });
         }
@@ -556,19 +567,24 @@
             const meta = COMMANDS[payload.command];
             const div = document.createElement('div');
             div.className = "flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition text-sm animate-[fadeIn_0.5s_ease-out]";
+            
+            // Friendly Text Generation
+            let details = `ID: ${payload.target_id}`;
+            if (payload.data) details += ` | Data: ${payload.data}`;
+
             div.innerHTML = `
                 <div class="flex items-center gap-3">
                     <span class="w-2 h-2 rounded-full ${meta.color}"></span>
-                    <span class="font-bold text-white">${payload.command}</span>
-                    <span class="font-mono text-slate-500 text-xs">${payload.target_id}</span>
+                    <div>
+                        <span class="font-bold text-white">${payload.command}</span>
+                        <div class="font-mono text-slate-500 text-[10px]">${details}</div>
+                    </div>
                 </div>
-                <div class="text-xs text-slate-500">${new Date().toLocaleTimeString()}</div>
+                <div class="text-xs text-slate-500 font-mono">${new Date().toLocaleTimeString()}</div>
             `;
             list.prepend(div);
-            
-            if (list.children.length > 6) list.lastElementChild.remove();
+            if (list.children.length > 8) list.lastElementChild.remove();
         }
-
     </script>
 </body>
 </html>

@@ -313,7 +313,8 @@
                     <label id="lbl-target-id" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Target User ID</label>
                     <div class="relative">
                         <span class="absolute left-4 top-3 text-slate-500 font-mono text-sm">#</span>
-                        <input type="number" id="inp-target-id" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-8 pr-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" placeholder="e.g. 1448495701863694408">
+                        <!-- CHANGED: input type="text" and inputmode="numeric" to prevent integer rounding issues -->
+                        <input type="text" inputmode="numeric" id="inp-target-id" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-8 pr-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" placeholder="e.g. 1448495701863694408">
                     </div>
                 </div>
 
@@ -501,7 +502,9 @@
 
             const payload = {
                 command: currentCommand,
-                target_id: parseInt(targetId),
+                // CRITICAL FIX: Send ID as a String, NOT a Number (Int).
+                // Discord IDs (Snowflakes) are too large for JS integers and get corrupted.
+                target_id: targetId,
                 reason: reason || "No reason provided",
                 data: extraData
             };

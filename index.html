@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebDDC v1.2 | Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #020617; /* Slate 950 */
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            color: #e2e8f0;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.6));
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        /* Modal & Toast Animations */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.2s ease-out; }
+        .modal-exit { opacity: 1; transform: scale(1); }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: all 0.2s ease-in; }
+
+        .toast-slide { transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-slide.active { transform: translateX(0); }
+
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-left-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden text-slate-300">
+
+    <!-- SIDEBAR -->
+    <aside class="w-20 lg:w-64 glass border-r-0 border-r border-white/5 flex flex-col transition-all duration-300 z-20">
+        <div class="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-white/5">
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <i class="fa-solid fa-bolt text-white text-sm"></i>
+            </div>
+            <span class="ml-3 font-bold text-lg tracking-tight text-white hidden lg:block">WebDDC<span class="text-blue-400">1.2</span></span>
+        </div>
+
+        <nav class="flex-1 p-3 space-y-2 overflow-y-auto">
+            <div class="text-xs font-bold text-slate-500 uppercase px-3 mb-2 mt-4 hidden lg:block">Modules</div>
+            
+            <button class="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 transition-all group relative">
+                <i class="fa-solid fa-shield-halved text-lg w-6 text-center"></i>
+                <span class="font-medium hidden lg:block">Moderation</span>
+                <div class="absolute left-0 w-1 h-8 bg-blue-500 rounded-r-full"></div>
+            </button>
+            
+            <button class="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all group">
+                <i class="fa-solid fa-list-check text-lg w-6 text-center group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium hidden lg:block">Audit Logs</span>
+            </button>
+            
+            <button class="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all group">
+                <i class="fa-solid fa-chart-pie text-lg w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+                <span class="font-medium hidden lg:block">Statistics</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-white/5">
+            <div class="bg-slate-900/50 rounded-xl p-3 border border-white/5 flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                </div>
+                <div class="hidden lg:block">
+                    <div class="text-xs font-bold text-emerald-400">System Online</div>
+                    <div class="text-[10px] text-slate-500 mono">v1.2.0-stable</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+        <!-- Background Decor -->
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Header -->
+        <header class="h-16 glass border-b border-white/5 flex items-center justify-between px-8 z-10">
+            <h2 class="text-white font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-terminal text-slate-500 text-sm"></i>
+                Dashboard
+            </h2>
+            <div class="flex items-center gap-4">
+                <div class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono flex items-center gap-2">
+                    <i class="fa-solid fa-link"></i> Secure Tunnel
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 border border-slate-500 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-user text-xs text-white"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-4 lg:p-8 z-10 scroll-smooth">
+            
+            <!-- SECTION 1: USER MANAGEMENT -->
+            <div class="mb-8">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1">User Actions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Kick -->
+                    <div onclick="openModal('KICK')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-user-minus text-5xl"></i></div>
+                        <div class="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-user-minus"></i></div>
+                        <h4 class="text-white font-bold">Kick User</h4>
+                        <p class="text-xs text-slate-500 mt-1">Remove a user from server.</p>
+                    </div>
+                    <!-- Ban -->
+                    <div onclick="openModal('BAN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-gavel text-5xl"></i></div>
+                        <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-gavel"></i></div>
+                        <h4 class="text-white font-bold">Ban User</h4>
+                        <p class="text-xs text-slate-500 mt-1">Permanently ban user.</p>
+                    </div>
+                    <!-- Unban -->
+                    <div onclick="openModal('UNBAN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-handshake text-5xl"></i></div>
+                        <div class="w-10 h-10 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-unlock"></i></div>
+                        <h4 class="text-white font-bold">Unban User</h4>
+                        <p class="text-xs text-slate-500 mt-1">Revoke a previous ban.</p>
+                    </div>
+                    <!-- Softban -->
+                    <div onclick="openModal('SOFTBAN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-eraser text-5xl"></i></div>
+                        <div class="w-10 h-10 rounded-lg bg-pink-500/10 text-pink-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-user-slash"></i></div>
+                        <h4 class="text-white font-bold">Softban</h4>
+                        <p class="text-xs text-slate-500 mt-1">Ban & Unban to clear msgs.</p>
+                    </div>
+                    <!-- Warn -->
+                    <div onclick="openModal('WARN')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
+                        <div class="w-10 h-10 rounded-lg bg-yellow-500/10 text-yellow-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <h4 class="text-white font-bold">Warn User</h4>
+                        <p class="text-xs text-slate-500 mt-1">Send a DM warning.</p>
+                    </div>
+                    <!-- DM -->
+                    <div onclick="openModal('DM')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-envelope"></i></div>
+                        <h4 class="text-white font-bold">Direct Message</h4>
+                        <p class="text-xs text-slate-500 mt-1">Send an official bot DM.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: STATUS & ROLES -->
+            <div class="mb-8">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1">Status & Roles</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Timeout -->
+                    <div onclick="openModal('TIMEOUT')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-hourglass-half text-yellow-400"></i>
+                            <h4 class="text-white font-bold">Timeout</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Mute user for duration.</p>
+                    </div>
+                    <!-- Untimeout -->
+                    <div onclick="openModal('UNTIMEOUT')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-hourglass text-emerald-400"></i>
+                            <h4 class="text-white font-bold">Remove Timeout</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Unmute a user early.</p>
+                    </div>
+                    <!-- Nickname -->
+                    <div onclick="openModal('NICKNAME')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-tag text-blue-400"></i>
+                            <h4 class="text-white font-bold">Change Nickname</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Force update user display name.</p>
+                    </div>
+                    <!-- Add Role -->
+                    <div onclick="openModal('ROLE_ADD')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-plus-circle text-emerald-400"></i>
+                            <h4 class="text-white font-bold">Add Role</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Assign role via ID.</p>
+                    </div>
+                    <!-- Remove Role -->
+                    <div onclick="openModal('ROLE_REMOVE')" class="glass-card rounded-xl p-5 cursor-pointer group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-minus-circle text-red-400"></i>
+                            <h4 class="text-white font-bold">Remove Role</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Revoke role via ID.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: CHANNEL CONTROLS -->
+            <div class="mb-8">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pl-1">Channel Controls</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Purge -->
+                    <div onclick="openModal('PURGE')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-red-500/50">
+                        <div class="flex justify-between">
+                            <div>
+                                <h4 class="text-white font-bold">Purge</h4>
+                                <p class="text-xs text-slate-500">Delete messages.</p>
+                            </div>
+                            <i class="fa-solid fa-trash-can text-slate-600 group-hover:text-red-400 transition-colors"></i>
+                        </div>
+                    </div>
+                    <!-- Lock -->
+                    <div onclick="openModal('LOCK')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-orange-500/50">
+                        <div class="flex justify-between">
+                            <div>
+                                <h4 class="text-white font-bold">Lock Channel</h4>
+                                <p class="text-xs text-slate-500">Prevent chatting.</p>
+                            </div>
+                            <i class="fa-solid fa-lock text-slate-600 group-hover:text-orange-400 transition-colors"></i>
+                        </div>
+                    </div>
+                    <!-- Unlock -->
+                    <div onclick="openModal('UNLOCK')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-green-500/50">
+                        <div class="flex justify-between">
+                            <div>
+                                <h4 class="text-white font-bold">Unlock Channel</h4>
+                                <p class="text-xs text-slate-500">Allow chatting.</p>
+                            </div>
+                            <i class="fa-solid fa-lock-open text-slate-600 group-hover:text-green-400 transition-colors"></i>
+                        </div>
+                    </div>
+                    <!-- Slowmode -->
+                    <div onclick="openModal('SLOWMODE')" class="glass-card rounded-xl p-5 cursor-pointer group border-l-2 border-l-blue-500/50">
+                        <div class="flex justify-between">
+                            <div>
+                                <h4 class="text-white font-bold">Slowmode</h4>
+                                <p class="text-xs text-slate-500">Set chat delay.</p>
+                            </div>
+                            <i class="fa-solid fa-gauge-simple text-slate-600 group-hover:text-blue-400 transition-colors"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT ACTIVITY -->
+            <div class="glass rounded-xl p-6 border border-white/5">
+                <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Local Session Activity
+                </h3>
+                <div id="activity-list" class="space-y-2">
+                    <div class="text-slate-600 text-sm italic py-2">Waiting for commands...</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- DYNAMIC ACTION MODAL -->
+    <div id="modal-backdrop" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center transition-all duration-300">
+        <div id="modal-content" class="bg-[#0f172a] border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
+                <div class="flex items-center gap-3">
+                    <div id="modal-icon-bg" class="w-8 h-8 rounded-lg flex items-center justify-center">
+                        <i id="modal-icon" class="text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-title" class="text-lg font-bold text-white leading-tight">Command</h3>
+                        <p id="modal-desc" class="text-xs text-slate-500">Configure parameters below</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-500 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4">
+                
+                <!-- ID Input (Dynamic Label) -->
+                <div>
+                    <label id="lbl-target-id" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Target User ID</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-slate-500 font-mono text-sm">#</span>
+                        <input type="number" id="inp-target-id" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-8 pr-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" placeholder="e.g. 1448495701863694408">
+                    </div>
+                </div>
+
+                <!-- Dynamic Data Fields (Hidden by default) -->
+                
+                <!-- Duration (Minutes) -->
+                <div id="field-duration" class="hidden">
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Duration (Minutes)</label>
+                    <input type="number" id="inp-duration" value="60" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Seconds (Slowmode) -->
+                <div id="field-seconds" class="hidden">
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Delay (Seconds)</label>
+                    <input type="number" id="inp-seconds" value="5" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Amount (Purge) -->
+                <div id="field-amount" class="hidden">
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Message Count</label>
+                    <input type="number" id="inp-amount" value="10" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none">
+                </div>
+
+                <!-- String Input (Nickname, etc) -->
+                <div id="field-string" class="hidden">
+                    <label id="lbl-string" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Value</label>
+                    <input type="text" id="inp-string" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-white text-sm focus:border-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Reason / Message -->
+                <div id="field-reason">
+                    <label id="lbl-reason" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Reason / Details</label>
+                    <textarea id="inp-reason" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-white text-sm focus:border-blue-500 focus:outline-none h-24 resize-none" placeholder="Enter reason or message content..."></textarea>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-5 border-t border-slate-800 bg-slate-900/30 rounded-b-2xl flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-5 py-2.5 text-sm font-medium text-slate-400 hover:text-white transition">Cancel</button>
+                <button onclick="submitCommand()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-600/20 transition flex items-center gap-2 transform active:scale-95">
+                    <span>Execute</span>
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOASTS -->
+    <div id="toast-processing" class="toast-slide fixed bottom-8 right-8 z-[60] bg-slate-900 border border-blue-500/30 rounded-xl shadow-2xl p-4 flex items-center gap-4 w-80">
+        <div class="spinner"></div>
+        <div>
+            <h4 class="text-white font-bold text-sm">Transmitting...</h4>
+            <div class="text-xs text-blue-400">Sending payload to Webhook</div>
+        </div>
+    </div>
+
+    <div id="toast-success" class="toast-slide fixed bottom-8 right-8 z-[60] bg-slate-900 border border-emerald-500/30 rounded-xl shadow-2xl p-4 flex items-center gap-4 w-80">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+            <h4 class="text-white font-bold text-sm">Success</h4>
+            <div class="text-xs text-emerald-400">Command received by PHS</div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1448507260266352684/Jj2Vi5QAKcA_mrVmBPzztIP7P9hucs7TGP7jm-J6M2BYMpD52RFo3qZA4tsSQ9qlKGr0';
+        let currentCommand = '';
+
+        // --- COMMAND METADATA ---
+        const COMMANDS = {
+            'KICK': { icon: 'fa-user-minus', color: 'bg-orange-500', title: 'Kick User', type: 'USER' },
+            'BAN': { icon: 'fa-gavel', color: 'bg-red-500', title: 'Ban User', type: 'USER' },
+            'UNBAN': { icon: 'fa-unlock', color: 'bg-green-500', title: 'Unban User', type: 'USER' },
+            'SOFTBAN': { icon: 'fa-eraser', color: 'bg-pink-500', title: 'Softban User', type: 'USER' },
+            'WARN': { icon: 'fa-triangle-exclamation', color: 'bg-yellow-500', title: 'Warn User', type: 'USER' },
+            'DM': { icon: 'fa-envelope', color: 'bg-indigo-500', title: 'Direct Message', type: 'USER' },
+            'TIMEOUT': { icon: 'fa-hourglass-half', color: 'bg-yellow-600', title: 'Timeout User', type: 'USER' },
+            'UNTIMEOUT': { icon: 'fa-hourglass', color: 'bg-emerald-600', title: 'Remove Timeout', type: 'USER' },
+            'NICKNAME': { icon: 'fa-tag', color: 'bg-blue-600', title: 'Change Nickname', type: 'USER' },
+            'ROLE_ADD': { icon: 'fa-plus-circle', color: 'bg-emerald-500', title: 'Add Role', type: 'USER' },
+            'ROLE_REMOVE': { icon: 'fa-minus-circle', color: 'bg-red-500', title: 'Remove Role', type: 'USER' },
+            'PURGE': { icon: 'fa-trash-can', color: 'bg-red-600', title: 'Purge Channel', type: 'CHANNEL' },
+            'LOCK': { icon: 'fa-lock', color: 'bg-orange-600', title: 'Lock Channel', type: 'CHANNEL' },
+            'UNLOCK': { icon: 'fa-lock-open', color: 'bg-green-600', title: 'Unlock Channel', type: 'CHANNEL' },
+            'SLOWMODE': { icon: 'fa-gauge-simple', color: 'bg-blue-600', title: 'Set Slowmode', type: 'CHANNEL' },
+        };
+
+        // --- UI FUNCTIONS ---
+        function openModal(cmd) {
+            currentCommand = cmd;
+            const meta = COMMANDS[cmd];
+
+            // Reset Fields
+            document.querySelectorAll('[id^="field-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('inp-target-id').value = '';
+            document.getElementById('inp-reason').value = '';
+            document.getElementById('inp-string').value = '';
+
+            // Set Header
+            document.getElementById('modal-title').innerText = meta.title;
+            document.getElementById('modal-icon').className = `fa-solid ${meta.icon} text-white`;
+            document.getElementById('modal-icon-bg').className = `w-10 h-10 rounded-lg flex items-center justify-center shadow-lg ${meta.color}`;
+
+            // Configure ID Label
+            const idLabel = document.getElementById('lbl-target-id');
+            const idInput = document.getElementById('inp-target-id');
+            if (meta.type === 'CHANNEL') {
+                idLabel.innerText = "Target Channel ID";
+                idInput.placeholder = "e.g. 123456789 (Channel ID)";
+            } else {
+                idLabel.innerText = "Target User ID";
+                idInput.placeholder = "e.g. 1448495701863694408";
+            }
+
+            // Configure Specific Fields
+            if (cmd === 'TIMEOUT') {
+                document.getElementById('field-duration').classList.remove('hidden');
+            } else if (cmd === 'PURGE') {
+                document.getElementById('field-amount').classList.remove('hidden');
+            } else if (cmd === 'SLOWMODE') {
+                document.getElementById('field-seconds').classList.remove('hidden');
+            } else if (cmd === 'NICKNAME') {
+                const f = document.getElementById('field-string');
+                f.classList.remove('hidden');
+                document.getElementById('lbl-string').innerText = "New Nickname";
+            } else if (cmd === 'ROLE_ADD' || cmd === 'ROLE_REMOVE') {
+                const f = document.getElementById('field-string');
+                f.classList.remove('hidden');
+                document.getElementById('lbl-string').innerText = "Role ID";
+            }
+
+            // Reason Label Adjustment
+            const reasonLbl = document.getElementById('lbl-reason');
+            if (cmd === 'DM') reasonLbl.innerText = "Message Content";
+            else reasonLbl.innerText = "Reason / Details";
+
+            // Show Modal
+            const backdrop = document.getElementById('modal-backdrop');
+            const content = document.getElementById('modal-content');
+            
+            backdrop.classList.remove('hidden');
+            // Small timeout to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                content.classList.remove('opacity-0', 'scale-95');
+                content.classList.add('opacity-100', 'scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const backdrop = document.getElementById('modal-backdrop');
+            const content = document.getElementById('modal-content');
+            
+            content.classList.remove('opacity-100', 'scale-100');
+            content.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 200);
+        }
+
+        // --- SUBMISSION ---
+        async function submitCommand() {
+            const targetId = document.getElementById('inp-target-id').value;
+            const reason = document.getElementById('inp-reason').value;
+            
+            if (!targetId) {
+                alert("Target ID is required");
+                return;
+            }
+
+            // Gather Data
+            let extraData = null;
+            if (currentCommand === 'TIMEOUT') extraData = parseInt(document.getElementById('inp-duration').value);
+            else if (currentCommand === 'PURGE') extraData = parseInt(document.getElementById('inp-amount').value);
+            else if (currentCommand === 'SLOWMODE') extraData = parseInt(document.getElementById('inp-seconds').value);
+            else if (['NICKNAME', 'ROLE_ADD', 'ROLE_REMOVE'].includes(currentCommand)) extraData = document.getElementById('inp-string').value;
+
+            // Payload matches Python Script expectation:
+            // data.get("target_id") -> int
+            // data.get("data") -> extra_data
+            const payload = {
+                command: currentCommand,
+                target_id: parseInt(targetId),
+                reason: reason || "No reason provided",
+                data: extraData
+            };
+
+            closeModal();
+            triggerToastSequence(payload);
+        }
+
+        // --- TOAST LOGIC ---
+        function triggerToastSequence(payload) {
+            const tProcess = document.getElementById('toast-processing');
+            const tSuccess = document.getElementById('toast-success');
+
+            // 1. Show Processing
+            tProcess.classList.add('active');
+
+            // 2. Send Webhook (Fire and forget visual, but wait for promise logic)
+            sendWebhook(payload).then(() => {
+                setTimeout(() => {
+                    tProcess.classList.remove('active');
+                    setTimeout(() => tSuccess.classList.add('active'), 200); // Small delay for smooth swap
+                    
+                    logActivity(payload);
+                    
+                    // Hide success after 3s
+                    setTimeout(() => tSuccess.classList.remove('active'), 3000);
+                }, 2000); // Fake 2s delay for "sleekness"
+            }).catch(err => {
+                tProcess.classList.remove('active');
+                alert("Webhook Error: " + err);
+            });
+        }
+
+        async function sendWebhook(payload) {
+            // Using the hardcoded webhook
+            await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: JSON.stringify(payload), // Send raw JSON as string inside content
+                    username: "WebDDC v1.2",
+                    avatar_url: "https://cdn-icons-png.flaticon.com/512/2910/2910768.png"
+                })
+            });
+        }
+
+        function logActivity(payload) {
+            const list = document.getElementById('activity-list');
+            if (list.children.length > 0 && list.children[0].classList.contains('italic')) list.innerHTML = '';
+            
+            const meta = COMMANDS[payload.command];
+            const div = document.createElement('div');
+            div.className = "flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition text-sm animate-[fadeIn_0.5s_ease-out]";
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full ${meta.color}"></span>
+                    <span class="font-bold text-white">${payload.command}</span>
+                    <span class="font-mono text-slate-500 text-xs">${payload.target_id}</span>
+                </div>
+                <div class="text-xs text-slate-500">${new Date().toLocaleTimeString()}</div>
+            `;
+            list.prepend(div);
+            
+            if (list.children.length > 6) list.lastElementChild.remove();
+        }
+
+    </script>
+</body>
+</html>

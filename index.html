@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bot Test 01 | Dashboard</title>
+    <title>WebDDC v1.9.1 | Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -69,7 +69,7 @@
             <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20">
                 <i class="fa-solid fa-satellite-dish text-white text-sm"></i>
             </div>
-            <span class="ml-3 font-bold text-lg tracking-tight text-white hidden lg:block">WebDDC<span class="text-purple-400">1.9</span></span>
+            <span class="ml-3 font-bold text-lg tracking-tight text-white hidden lg:block">WebDDC<span class="text-purple-400">1.9.1</span></span>
         </div>
 
         <nav class="flex-1 p-3 space-y-2 overflow-y-auto">
@@ -333,11 +333,12 @@
             <div class="p-6 space-y-4">
                 
                 <!-- ID Input (Target) -->
+                <!-- CHANGED FROM type="number" TO type="text" TO PREVENT ROUNDING -->
                 <div id="container-target">
                     <label id="lbl-target-id" class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Target ID</label>
                     <div class="relative">
                         <span class="absolute left-4 top-3 text-slate-500 font-mono text-sm">#</span>
-                        <input type="number" id="inp-target-id" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-8 pr-4 text-white font-mono text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 transition" placeholder="e.g. 1448495701863694408">
+                        <input type="text" id="inp-target-id" class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-8 pr-4 text-white font-mono text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 transition" placeholder="e.g. 1448495701863694408">
                     </div>
                     <p class="text-[10px] text-slate-600 mt-1 ml-1" id="hint-target">Right click User/Channel -> Copy ID</p>
                 </div>
@@ -393,7 +394,6 @@
         let currentCommand = '';
 
         // --- COMMAND METADATA MAP (v1.9) ---
-        // Defines visual look and expected input type for each command
         const COMMANDS = {
             // User Mod
             'KICK': { icon: 'fa-user-minus', color: 'bg-orange-500', title: 'Kick User', type: 'USER', needsData: false },
@@ -512,12 +512,14 @@
                 return;
             }
 
-            // Construct Payload matches Python Script keys
+            // FIXED: Send target_id as a STRING, not an integer
+            // JavaScript rounds large integers (19 digits) which corrupts IDs
+            // Python will receive "123..." as a string and convert it to int correctly
             const payload = {
                 command: currentCommand,
-                target_id: parseInt(targetId) || 0, // Python expects Integer
-                reason: reason || "No reason provided", // Captures the reason/message/poll question
-                data: dataVal || null // Captures duration/count/nickname/etc
+                target_id: targetId || "0", // CHANGED: No parseInt() here
+                reason: reason || "No reason provided", 
+                data: dataVal || null 
             };
 
             closeModal();
@@ -551,10 +553,8 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // The Payload is sent as a string inside "content"
-                    // The Bot listens to message.content and parses it back to JSON
                     content: JSON.stringify(payload), 
-                    username: "WebDDC v1.9 Console",
+                    username: "WebDDC v1.9.1 Console",
                     avatar_url: "https://cdn-icons-png.flaticon.com/512/900/900782.png"
                 })
             });
@@ -568,7 +568,6 @@
             const div = document.createElement('div');
             div.className = "flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition text-sm animate-[fadeIn_0.5s_ease-out]";
             
-            // Friendly Text Generation
             let details = `ID: ${payload.target_id}`;
             if (payload.data) details += ` | Data: ${payload.data}`;
 

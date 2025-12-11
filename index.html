@@ -410,8 +410,13 @@
             currentCommand = cmd;
             const meta = COMMANDS[cmd];
 
-            // Reset Fields
+            // 1. Hide ALL specific fields (start with field-)
             document.querySelectorAll('[id^="field-"]').forEach(el => el.classList.add('hidden'));
+            
+            // 2. IMPORTANT: Explicitly UNHIDE the Reason field, because step 1 hid it!
+            document.getElementById('field-reason').classList.remove('hidden');
+
+            // Reset Input Values
             document.getElementById('inp-target-id').value = '';
             document.getElementById('inp-reason').value = '';
             document.getElementById('inp-string').value = '';
@@ -459,7 +464,6 @@
             const content = document.getElementById('modal-content');
             
             backdrop.classList.remove('hidden');
-            // Small timeout to allow display:block to apply before opacity transition
             setTimeout(() => {
                 content.classList.remove('opacity-0', 'scale-95');
                 content.classList.add('opacity-100', 'scale-100');
@@ -495,9 +499,6 @@
             else if (currentCommand === 'SLOWMODE') extraData = parseInt(document.getElementById('inp-seconds').value);
             else if (['NICKNAME', 'ROLE_ADD', 'ROLE_REMOVE'].includes(currentCommand)) extraData = document.getElementById('inp-string').value;
 
-            // Payload matches Python Script expectation:
-            // data.get("target_id") -> int
-            // data.get("data") -> extra_data
             const payload = {
                 command: currentCommand,
                 target_id: parseInt(targetId),
@@ -517,15 +518,14 @@
             // 1. Show Processing
             tProcess.classList.add('active');
 
-            // 2. Send Webhook (Fire and forget visual, but wait for promise logic)
+            // 2. Send Webhook
             sendWebhook(payload).then(() => {
                 setTimeout(() => {
                     tProcess.classList.remove('active');
-                    setTimeout(() => tSuccess.classList.add('active'), 200); // Small delay for smooth swap
+                    setTimeout(() => tSuccess.classList.add('active'), 200);
                     
                     logActivity(payload);
                     
-                    // Hide success after 3s
                     setTimeout(() => tSuccess.classList.remove('active'), 3000);
                 }, 2000); // Fake 2s delay for "sleekness"
             }).catch(err => {
@@ -535,7 +535,6 @@
         }
 
         async function sendWebhook(payload) {
-            // Using the hardcoded webhook
             await fetch(WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

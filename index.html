@@ -11,7 +11,6 @@
             --text-color: #ffffff;
             --accent: #5865F2;
             --accent-hover: #4752c4;
-            --success: #43b581;
             --danger: #ed4245;
         }
         body {
@@ -25,8 +24,26 @@
             min-height: 100vh;
         }
         
-        /* --- UTILITIES --- */
         .hidden { display: none !important; }
+        
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 40px;
+            padding-bottom: 40px;
+        }
+        
+        /* LOGIN CARD */
+        .login-card {
+            background-color: var(--card-bg);
+            padding: 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            margin: 100px auto;
+            max-width: 500px;
+            text-align: center;
+        }
+
         .btn {
             background-color: var(--accent);
             color: white;
@@ -38,9 +55,30 @@
             font-weight: bold;
             font-size: 1rem;
             transition: 0.2s;
+            display: inline-block;
         }
         .btn:hover { background-color: var(--accent-hover); transform: scale(1.02); }
         .btn-danger { background-color: var(--danger); }
+
+        /* PROFILE SECTION */
+        .profile-section {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            align-items: center;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--accent);
+        }
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+        }
+        
         .tag {
             background: #202225;
             padding: 4px 10px;
@@ -52,66 +90,7 @@
             border: 1px solid #333;
         }
 
-        /* --- LAYOUTS --- */
-        .container {
-            width: 90%;
-            max-width: 1000px;
-            margin-top: 40px;
-            padding-bottom: 40px;
-        }
-        
-        /* --- LOGIN SCREEN --- */
-        .login-card {
-            background-color: var(--card-bg);
-            padding: 60px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            margin: 100px auto;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        /* --- DASHBOARD HEADER (USER PROFILE) --- */
-        .profile-section {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            align-items: center;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border-left: 5px solid var(--accent);
-        }
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid var(--accent);
-        }
-        .user-details h2 { margin: 0; font-size: 1.8rem; }
-        .user-details p { margin: 5px 0; color: #bbb; font-size: 0.95rem; }
-        
-        .connections-list {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        .connection-badge {
-            background: #18191c;
-            border: 1px solid #444;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* --- SERVER GRID --- */
-        .grid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        /* SERVER GRID */
         .server-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -128,14 +107,12 @@
             align-items: center;
             text-align: center;
             position: relative;
-            overflow: hidden;
             border: 1px solid transparent;
         }
         .server-card:hover {
             transform: translateY(-5px);
             background-color: #2f3136;
             border-color: #444;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
         .server-icon {
             width: 80px;
@@ -160,33 +137,17 @@
             justify-content: center;
         }
 
-        /* --- DETAIL VIEW --- */
+        /* DETAIL VIEW */
         .detail-view {
             background-color: var(--card-bg);
             border-radius: 10px;
             padding: 40px;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .detail-header {
-            display: flex;
-            gap: 30px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 30px;
-            margin-bottom: 30px;
-            align-items: center;
-        }
-        .detail-big-icon {
-            width: 140px;
-            height: 140px;
-            border-radius: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
         }
         .data-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
+            margin-top: 20px;
         }
         .data-box {
             background: #2f3136;
@@ -194,54 +155,48 @@
             border-radius: 10px;
             border: 1px solid #333;
         }
-        .data-box h3 { margin-top: 0; color: var(--accent); font-size: 1.1rem; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 15px;}
     </style>
 </head>
 <body>
 
-    
-
     <div id="login-section" class="container">
         <div class="login-card">
-            <h1>🔐 Login Required</h1>
-            <p>Please authorize with Discord to access the dashboard.</p>
+            <h1>🔐 Authorization</h1>
+            <p>Please log in to view dashboard data.</p>
             <br>
-            <a class="btn" href="https://discord.com/oauth2/authorize?client_id=1448499944884408393&response_type=token&redirect_uri=https%3A%2F%2Fbluv-developer.github.io%2FTest__Bot01_Dash%2F&scope=guilds.members.read+connections+gateway.connect+identify+guilds+guilds.channels.read+email+guilds.join+activities.read">
+            
+            <a class="btn" href="https://discord.com/oauth2/authorize?client_id=1448499944884408393&response_type=token&redirect_uri=https%3A%2F%2Fbluv-developer.github.io%2FTest__Bot01_Dash%2F&scope=identify+email+guilds+connections+guilds.join">
                 Login with Discord
             </a>
+            
         </div>
     </div>
 
     <div id="dashboard-section" class="container hidden">
         
         <div class="profile-section">
-            <div id="profile-loading">Fetching User Data...</div>
+            <div id="profile-loading">Loading...</div>
             
             <div id="profile-content" style="display:flex; gap:25px; width:100%; align-items:center;" class="hidden">
                 <img id="user-avatar" class="profile-img" src="">
-                <div class="user-details" style="flex-grow: 1;">
+                <div style="flex-grow: 1;">
                     <h2 id="user-name">User</h2>
-                    <p id="user-email">Loading email...</p>
-                    <p id="user-id" style="font-family:monospace; color:#777;">ID: ...</p>
-                    <div id="user-connections" class="connections-list"></div>
+                    <p id="user-email">...</p>
+                    <p id="user-id" style="font-family:monospace; color:#777; font-size:0.9em;">ID: ...</p>
+                    <div id="user-connections" style="margin-top:10px;"></div>
                 </div>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
         </div>
 
         <div id="server-list-view">
-            <div class="grid-header">
-                <h2>Your Servers</h2>
-                <span id="server-count" class="tag">Loading...</span>
-            </div>
-            <div id="guild-container" class="server-grid">
-                </div>
+            <h2 style="border-bottom:1px solid #444; padding-bottom:10px;">Your Servers</h2>
+            <div id="guild-container" class="server-grid"></div>
         </div>
 
         <div id="server-detail-view" class="hidden">
-            <button onclick="closeDetail()" class="btn" style="margin-bottom: 20px; background:#4f545c;">&larr; Back to List</button>
-            <div id="detail-content" class="detail-view">
-                </div>
+            <button onclick="closeDetail()" class="btn" style="margin-bottom: 20px; background:#4f545c;">&larr; Back to Servers</button>
+            <div id="detail-content" class="detail-view"></div>
         </div>
 
     </div>
@@ -250,24 +205,21 @@
         let globalGuilds = [];
 
         window.onload = () => {
-            // 1. Get Token from URL (Implicit Grant)
+            // Check for implicit grant token in URL hash
             const fragment = new URLSearchParams(window.location.hash.slice(1));
             const accessToken = fragment.get('access_token');
             const tokenType = fragment.get('token_type');
 
             if (accessToken) {
-                // Switch screens
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
 
-                // Load all data
                 loadUserData(tokenType, accessToken);
                 loadGuilds(tokenType, accessToken);
                 loadConnections(tokenType, accessToken);
             }
         };
 
-        // --- FETCH USER PROFILE ---
         function loadUserData(type, token) {
             fetch('https://discord.com/api/users/@me', {
                 headers: { authorization: `${type} ${token}` }
@@ -284,17 +236,10 @@
                 document.getElementById('user-avatar').src = avatar;
                 document.getElementById('user-name').innerText = user.global_name || user.username;
                 document.getElementById('user-id').innerText = `ID: ${user.id}`;
-                
-                // Displays Email if scope allowed it
-                if(user.email) {
-                    document.getElementById('user-email').innerHTML = `📧 ${user.email} <span class="tag">${user.verified ? 'Verified' : 'Unverified'}</span>`;
-                } else {
-                    document.getElementById('user-email').innerText = "Email: Hidden (Scope denied?)";
-                }
+                document.getElementById('user-email').innerText = user.email || "Email Hidden";
             });
         }
 
-        // --- FETCH LINKED ACCOUNTS (Connections) ---
         function loadConnections(type, token) {
             fetch('https://discord.com/api/users/@me/connections', {
                 headers: { authorization: `${type} ${token}` }
@@ -302,32 +247,17 @@
             .then(res => res.json())
             .then(connections => {
                 const container = document.getElementById('user-connections');
-                
                 if(!connections || connections.length === 0) {
-                    container.innerHTML = "<span class='tag'>No public connections found</span>";
+                    container.innerHTML = "<span class='tag'>No linked accounts</span>";
                     return;
                 }
-
-                container.innerHTML = connections.map(c => {
-                    // Simple logic to add emojis for common services
-                    let icon = '🔗';
-                    if(c.type.includes('steam')) icon = '🎮';
-                    if(c.type.includes('spotify')) icon = '🎵';
-                    if(c.type.includes('github')) icon = '💻';
-                    if(c.type.includes('youtube')) icon = '📺';
-                    if(c.type.includes('twitch')) icon = '🟣';
-                    
-                    return `
-                    <div class="connection-badge" title="${c.type}">
-                        ${icon} <strong>${c.name}</strong>
-                        ${c.verified ? '<span style="color:#43b581; font-size:0.8em;">✓</span>' : ''}
-                    </div>
-                `}).join('');
+                container.innerHTML = connections.map(c => 
+                    `<span class="tag" style="border-color:#5865F2;">${c.type}: ${c.name}</span>`
+                ).join('');
             })
-            .catch(err => console.log("Connections error:", err));
+            .catch(console.error);
         }
 
-        // --- FETCH SERVERS ---
         function loadGuilds(type, token) {
             fetch('https://discord.com/api/users/@me/guilds', {
                 headers: { authorization: `${type} ${token}` }
@@ -335,8 +265,6 @@
             .then(res => res.json())
             .then(guilds => {
                 globalGuilds = guilds;
-                document.getElementById('server-count').innerText = `${guilds.length} Servers Found`;
-                
                 const container = document.getElementById('guild-container');
                 container.innerHTML = guilds.map(g => {
                     const icon = g.icon 
@@ -345,16 +273,15 @@
 
                     return `
                         <div class="server-card" onclick="openDetail('${g.id}')">
-                            ${g.owner ? '<div class="owner-crown" title="Server Owner">👑</div>' : ''}
+                            ${g.owner ? '<div class="owner-crown">👑</div>' : ''}
                             <img src="${icon}" class="server-icon">
-                            <div style="font-weight:bold; font-size:1rem;">${g.name}</div>
+                            <div style="font-weight:bold;">${g.name}</div>
                         </div>
                     `;
                 }).join('');
             });
         }
 
-        // --- DEEP DIVE DETAILS ---
         function openDetail(guildId) {
             const g = globalGuilds.find(x => x.id === guildId);
             if(!g) return;
@@ -366,31 +293,28 @@
                 ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=512` 
                 : `https://cdn.discordapp.com/embed/avatars/0.png`;
 
-            // Format Features nicely
-            const features = g.features && g.features.length > 0
+            const features = g.features && g.features.length 
                 ? g.features.map(f => `<span class="tag" style="background:#5865F2; color:white;">${f.replace(/_/g, ' ')}</span>`).join(' ')
-                : "<span style='color:#777'>No specific features enabled</span>";
+                : "None";
 
             const html = `
-                <div class="detail-header">
-                    <img src="${icon}" class="detail-big-icon">
+                <div style="display:flex; align-items:center; gap:20px; border-bottom:1px solid #444; padding-bottom:20px;">
+                    <img src="${icon}" style="width:100px; height:100px; border-radius:20px;">
                     <div>
-                        <h1 style="margin:0; font-size:2rem;">${g.name}</h1>
-                        <p style="color:#bbb; font-family:monospace;">ID: ${g.id}</p>
-                        ${g.owner ? '<span class="tag" style="background:#faa61a; color:black; font-weight:bold;">👑 SERVER OWNER</span>' : '<span class="tag">MEMBER</span>'}
+                        <h1 style="margin:0;">${g.name}</h1>
+                        <p style="color:#bbb;">ID: ${g.id}</p>
                     </div>
                 </div>
-
+                
                 <div class="data-grid">
                     <div class="data-box">
-                        <h3>📋 Basic Info</h3>
+                        <h3 style="color:#5865F2; margin-top:0;">Details</h3>
+                        <p><strong>Owner:</strong> ${g.owner ? "✅ You own this" : "❌ Not Owner"}</p>
                         <p><strong>Permissions:</strong> ${g.permissions}</p>
-                        <p><strong>Owner Status:</strong> ${g.owner ? "Yes" : "No"}</p>
                     </div>
-                    
-                    <div class="data-box" style="grid-column: span 2;">
-                        <h3>✨ Enabled Features</h3>
-                        <div style="line-height:1.8;">${features}</div>
+                    <div class="data-box">
+                        <h3 style="color:#5865F2; margin-top:0;">Features</h3>
+                        <div style="line-height:1.6">${features}</div>
                     </div>
                 </div>
             `;
@@ -403,7 +327,6 @@
         }
 
         function logout() {
-            // Clear URL and reload
             history.pushState("", document.title, window.location.pathname + window.location.search);
             location.reload();
         }

@@ -3,368 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unlocked Dashboard</title>
+    <title>Spotify Music Engine</title>
     <style>
         :root {
-            --bg: #090909;
-            --card-bg: #141414;
-            --text-main: #ffffff;
-            --text-dim: #888;
-            --accent: #5865F2;
-            --border: #333;
+            --bg: #121212;
+            --card: #181818;
+            --hover: #282828;
+            --text: #ffffff;
+            --subtext: #b3b3b3;
+            --spotify-green: #1db954;
         }
 
         body {
             background-color: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            padding-bottom: 100px; /* Space for player */
         }
 
-        /* --- UTILITIES --- */
-        .hidden { display: none !important; }
-        .icon { width: 20px; height: 20px; fill: white; }
-        
-        .container { width: 95%; max-width: 1200px; margin-top: 40px; padding-bottom: 80px; }
-
-        /* --- LOGIN --- */
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.8), #000);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 999;
+            backdrop-filter: blur(5px);
+        }
         .login-card {
-            background: var(--card-bg);
+            background: #222;
             padding: 40px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
+            border-radius: 15px;
             text-align: center;
-            max-width: 400px;
-            margin: 100px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .privacy-box {
-            background: rgba(255, 0, 0, 0.1);
+        .login-btn {
+            background: var(--spotify-green);
+            color: black;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s, background 0.2s;
+            margin-top: 20px;
+        }
+        .login-btn:hover { transform: scale(1.05); background: #1ed760; }
+        .dev-warning {
+            color: #ed4245;
+            background: rgba(237, 66, 69, 0.1);
             border: 1px solid #ed4245;
-            padding: 15px;
-            text-align: left;
+            padding: 10px;
             font-size: 0.8rem;
             margin-top: 20px;
-            border-radius: 6px;
-            color: #ffcece;
+            border-radius: 5px;
+            max-width: 300px;
         }
 
-        .btn {
-            background-color: var(--accent);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
-            text-decoration: none;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+        /* --- SEARCH BAR --- */
+        .search-wrapper {
+            position: sticky; top: 0;
+            background: rgba(18, 18, 18, 0.95);
+            width: 100%;
+            padding: 20px 0;
+            display: flex; justify-content: center;
+            z-index: 100;
+            border-bottom: 1px solid #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .btn:hover { opacity: 0.9; }
-
-        /* --- SERVER GRID --- */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-        }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
+        .search-box {
+            background: #fff;
+            border-radius: 30px;
+            padding: 12px 25px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: 0.2s;
-            position: relative;
-            overflow: hidden;
+            width: 90%;
+            max-width: 600px;
         }
-        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        
-        .card-icon { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #222; }
-        .role-badge { 
-            position: absolute; top: 10px; right: 10px; 
-            background: rgba(0,0,0,0.5); padding: 5px; border-radius: 50%; 
-            display:flex; justify-content:center; align-items:center;
+        input {
+            border: none; outline: none;
+            font-size: 1.1rem; flex-grow: 1;
+            margin-left: 10px;
+            font-weight: 500;
         }
+        .search-icon { width: 24px; opacity: 0.5; fill: black; }
 
-        /* --- DETAIL VIEW --- */
-        .detail-layout {
+        /* --- RESULTS GRID --- */
+        .results-grid {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            align-items: start;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            width: 92%;
+            max-width: 1400px;
+            margin-top: 30px;
         }
-        @media (max-width: 800px) { .detail-layout { grid-template-columns: 1fr; } }
-
-        .detail-sidebar {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-        .detail-banner {
-            height: 120px;
-            background-color: #333;
-            background-size: cover;
-            border-radius: 8px;
-            margin-bottom: -60px;
-        }
-        .detail-main {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 30px;
-        }
-
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
-        .info-row span:last-child { color: white; font-weight: bold; font-family: monospace; }
-        
-        .raw-data-box {
-            background: #000;
-            color: #0f0;
-            font-family: monospace;
+        .song-card {
+            background: var(--card);
             padding: 15px;
-            overflow-x: auto;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            max-height: 300px;
-            margin-top: 20px;
-            white-space: pre-wrap;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            display: flex; flex-direction: column;
+            align-items: center;
+            text-align: left;
+            position: relative;
+        }
+        .song-card:hover { background: var(--hover); }
+        .song-card:hover .play-overlay { opacity: 1; }
+        
+        .album-art-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
+        .album-art {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .play-overlay {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: 0.2s;
+        }
+        .play-icon { width: 50px; height: 50px; fill: white; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
+
+        .song-title { font-weight: bold; font-size: 1rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; color: white;}
+        .artist-name { color: var(--subtext); font-size: 0.9rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* --- EMBED PLAYER (Fixed Bottom) --- */
+        #player-container {
+            position: fixed;
+            bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
+            width: 90%; max-width: 800px;
+            height: 80px;
+            background: #000;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 500;
+            overflow: hidden;
             border: 1px solid #333;
         }
+        #player-container.active { transform: translateX(-50%) translateY(0); }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        /* LOAD MORE */
+        #load-more {
+            margin: 40px;
+            background: transparent;
+            border: 1px solid var(--subtext);
+            color: white;
+            padding: 12px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        #load-more:hover { border-color: white; background: rgba(255,255,255,0.1); }
+        .hidden { display: none !important; }
+
     </style>
 </head>
 <body>
 
-    <svg style="display:none;">
-        <symbol id="crown" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
-        <symbol id="sword" viewBox="0 0 24 24"><path d="M14.5 13.5L21 7l-9-9-5 20 6.5-4.5zM7 17l-3 3 1.5 1.5L9 18l3.5-3.5L7 9z"/></symbol>
-    </svg>
-
-    <div id="login-view" class="container">
+    <div id="login-screen">
         <div class="login-card">
-            <h1>🔓 Full Access Dashboard</h1>
-            <p style="color:#aaa;">Connect to view deep server metrics.</p>
-            <br>
-            <a class="btn" href="https://discord.com/oauth2/authorize?client_id=1448499944884408393&response_type=token&redirect_uri=https%3A%2F%2Fbluv-developer.github.io%2FTest__Bot01_Dash%2F&scope=identify+email+guilds+connections+guilds.join">
-                Login with Discord
-            </a>
+            <h1 style="font-size: 2.5rem; margin: 0;">Music Explorer</h1>
+            <p style="color:#aaa;">Search millions of tracks instantly.</p>
+            
+            <button id="login-btn" class="login-btn">Login with Spotify</button>
 
-            <div class="privacy-box">
-                <strong>⚠️ PRIVACY OATH:</strong><br>
-                WE SWEAR we do not save your token. All data fetching happens directly in your browser. Refreshing the page wipes all data.
+            <div class="dev-warning">
+                <strong>⚠️ DEVELOPMENT MODE</strong><br>
+                Your email MUST be added to the Spotify Dashboard "Users & Access" list, or login will fail.
             </div>
         </div>
     </div>
 
-    <div id="dashboard-view" class="container hidden">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-            <div style="display:flex; gap:10px; align-items:center;">
-                <img id="my-avatar" style="width:40px; height:40px; border-radius:50%;" src="">
-                <strong id="my-name">User</strong>
-            </div>
-            <button onclick="logout()" class="btn" style="background:#ed4245;">Logout</button>
-        </div>
-
-        <div id="list-panel">
-            <h2>Select a Server</h2>
-            <div class="grid" id="server-grid">Loading...</div>
-        </div>
-
-        <div id="detail-panel" class="hidden">
-            <button onclick="closeDetail()" class="btn" style="background:#333; margin-bottom:20px;">&larr; Return to List</button>
-
-            <div class="detail-layout">
-                <div class="detail-sidebar">
-                    <div id="d-banner" class="detail-banner"></div>
-                    <img id="d-icon" style="width:100px; height:100px; border-radius:50%; border:5px solid var(--card-bg); position:relative; background:#000;" src="">
-                    <h2 id="d-name" style="margin-top:10px;">Name</h2>
-                    <p id="d-id" style="font-family:monospace; color:#666; font-size:0.8rem;">ID: 000</p>
-                    
-                    <div id="d-badges" style="margin-top:15px;"></div>
-                </div>
-
-                <div class="detail-main">
-                    <h3>Server Intel</h3>
-                    
-                    <div class="info-row"><span>Owner Name</span> <span id="val-owner">Fetching...</span></div>
-                    <div class="info-row"><span>Owner ID</span> <span id="val-owner-id">...</span></div>
-                    <div class="info-row"><span>Permission Integer</span> <span id="val-perm">...</span></div>
-                    <div class="info-row"><span>Approx. Members</span> <span id="val-members">Loading...</span></div>
-                    <div class="info-row"><span>Invite Code</span> <span id="val-invite">Loading...</span></div>
-                    <div class="info-row"><span>Locale</span> <span id="val-locale">...</span></div>
-                    <div class="info-row"><span>Vanity URL</span> <span id="val-vanity">...</span></div>
-                    <div class="info-row"><span>Explicit Filter</span> <span id="val-filter">...</span></div>
-                    
-                    <br>
-                    <h3>Features</h3>
-                    <div id="d-features" style="line-height:1.6; font-size:0.8rem; color:#aaa;"></div>
-
-                    <br>
-                    <details>
-                        <summary style="cursor:pointer; color:var(--accent);">Show RAW JSON (Nothing Hidden)</summary>
-                        <div id="raw-json" class="raw-data-box"></div>
-                    </details>
-                </div>
+    <div id="main-ui" class="hidden" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+        
+        <div class="search-wrapper">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="search-input" placeholder="Search for songs, artists, or podcasts...">
             </div>
         </div>
+
+        <div id="results-area" class="results-grid"></div>
+        <button id="load-more" class="hidden" onclick="search(true)">Load More Results</button>
+
+    </div>
+
+    <div id="player-container">
+        <div id="embed-wrapper" style="height:100%;"></div>
     </div>
 
     <script>
+        // --- CONFIGURATION ---
+        const CLIENT_ID = '162510cddb714bdc9baa0e56878eff6d'; // YOUR ID IS HERE
+        // Auto-detects the current URL (e.g. https://your-site.github.io/spotify.html)
+        // Make sure this EXACT URL is in your Dashboard Redirect URIs!
+        const REDIRECT_URI = window.location.href.split('#')[0]; 
+        // ---------------------
+
         let accessToken = null;
-        let tokenType = null;
-        let globalGuilds = [];
+        let nextUrl = null;
 
         window.onload = () => {
-            const fragment = new URLSearchParams(window.location.hash.slice(1));
-            accessToken = fragment.get('access_token');
-            tokenType = fragment.get('token_type');
+            // Check for token in URL hash
+            const params = new URLSearchParams(window.location.hash.substring(1));
+            accessToken = params.get('access_token');
 
             if (accessToken) {
-                document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('dashboard-view').classList.remove('hidden');
-                initDashboard();
+                // SUCCESS: Logged in
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-ui').classList.remove('hidden');
+                
+                // Clear the ugly token from the address bar
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                // SETUP LOGIN BUTTON
+                document.getElementById('login-btn').onclick = () => {
+                    const scopes = 'user-read-private user-read-email';
+                    const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scopes)}&show_dialog=true`;
+                    window.location.href = authUrl;
+                };
             }
         };
 
-        function initDashboard() {
-            // 1. Get Me
-            fetch('https://discord.com/api/users/@me', { headers: { authorization: `${tokenType} ${accessToken}` } })
-            .then(r => r.json()).then(u => {
-                document.getElementById('my-name').innerText = u.username;
-                document.getElementById('my-avatar').src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
-            });
+        // SEARCH LOGIC
+        let debounce;
+        document.getElementById('search-input').addEventListener('keyup', (e) => {
+            clearTimeout(debounce);
+            if (e.key === "Enter") search();
+            else debounce = setTimeout(() => search(), 600);
+        });
 
-            // 2. Get Guilds
-            fetch('https://discord.com/api/users/@me/guilds', { headers: { authorization: `${tokenType} ${accessToken}` } })
-            .then(r => r.json()).then(g => {
-                globalGuilds = g;
-                renderGrid(g);
-            });
-        }
+        async function search(loadMore = false) {
+            const query = document.getElementById('search-input').value;
+            if (!query) return;
 
-        function renderGrid(guilds) {
-            const container = document.getElementById('server-grid');
-            container.innerHTML = guilds.map(g => {
-                const icon = g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`;
-                
-                // Icon Logic: White SVG only
-                const isAdmin = (parseInt(g.permissions) & 0x8) === 0x8;
-                let badge = "";
-                if(g.owner) badge = `<div class="role-badge" title="Owner"><svg class="icon"><use href="#crown"/></svg></div>`;
-                else if(isAdmin) badge = `<div class="role-badge" title="Admin"><svg class="icon"><use href="#sword"/></svg></div>`;
+            // Determine URL
+            let url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=24`;
+            if (loadMore && nextUrl) url = nextUrl;
+            else if (!loadMore) {
+                document.getElementById('results-area').innerHTML = ''; // Clear old results
+                document.getElementById('load-more').classList.add('hidden');
+            }
 
-                return `
-                    <div class="card" onclick="loadDeepDetail('${g.id}')">
-                        <img src="${icon}" class="card-icon">
-                        ${badge}
-                        <div>
-                            <div style="font-weight:bold;">${g.name}</div>
-                            <div style="font-size:0.8rem; color:#666;">ID: ${g.id}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function loadDeepDetail(guildId) {
-            // UI Switch
-            document.getElementById('list-panel').classList.add('hidden');
-            document.getElementById('detail-panel').classList.remove('hidden');
-            
-            // Basic Info from cache
-            const g = globalGuilds.find(x => x.id === guildId);
-            
-            // Set Headers
-            document.getElementById('d-name').innerText = g.name;
-            document.getElementById('d-id').innerText = g.id;
-            document.getElementById('d-icon').src = g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=512` : `https://cdn.discordapp.com/embed/avatars/0.png`;
-            document.getElementById('val-perm').innerText = g.permissions;
-            document.getElementById('d-features').innerText = g.features.join(", ") || "None";
-            document.getElementById('val-owner-id').innerText = "Loading...";
-            
-            // Banner
-            const bannerDiv = document.getElementById('d-banner');
-            bannerDiv.style.backgroundImage = "none"; // Reset
-            
-            // ---------------------------------------------
-            // DEEP FETCH: Try to get Guild Object with Counts
-            // ---------------------------------------------
             try {
-                // 1. Fetch Guild Details (Some data hidden if not in guild or not bot)
-                const res = await fetch(`https://discord.com/api/guilds/${guildId}?with_counts=true`, {
-                    headers: { authorization: `${tokenType} ${accessToken}` }
-                });
+                const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + accessToken } });
                 
-                if(!res.ok) throw new Error("Access Denied (Bot not in server?)");
-                const fullG = await res.json();
+                if (res.status === 401) {
+                    alert("Login expired. Reloading...");
+                    window.location.reload();
+                    return;
+                }
 
-                // Show Raw Data
-                document.getElementById('raw-json').innerText = JSON.stringify(fullG, null, 2);
-
-                // Populate Deep Data
-                if(fullG.banner) bannerDiv.style.backgroundImage = `url(https://cdn.discordapp.com/banners/${fullG.id}/${fullG.banner}.png?size=600)`;
+                const data = await res.json();
+                nextUrl = data.tracks.next;
                 
-                document.getElementById('val-members').innerText = fullG.approximate_member_count || "Hidden by API";
-                document.getElementById('val-locale').innerText = fullG.preferred_locale;
-                document.getElementById('val-vanity').innerText = fullG.vanity_url_code || "None";
-                document.getElementById('val-filter').innerText = fullG.explicit_content_filter;
-                document.getElementById('val-owner-id').innerText = fullG.owner_id;
+                // Show/Hide Load More Button
+                if (nextUrl) document.getElementById('load-more').classList.remove('hidden');
+                else document.getElementById('load-more').classList.add('hidden');
 
-                // 2. FETCH REAL OWNER NAME
-                fetch(`https://discord.com/api/users/${fullG.owner_id}`, {
-                     headers: { authorization: `${tokenType} ${accessToken}` }
-                })
-                .then(r => r.json())
-                .then(owner => {
-                    document.getElementById('val-owner').innerText = `${owner.username} (${owner.id})`;
-                })
-                .catch(() => {
-                    document.getElementById('val-owner').innerText = "Unknown (Fetch Failed)";
-                });
-
-                // 3. ATTEMPT INVITES (Only works if Admin)
-                fetch(`https://discord.com/api/guilds/${guildId}/invites`, {
-                     headers: { authorization: `${tokenType} ${accessToken}` }
-                })
-                .then(r => {
-                    if(r.status === 403) return "Hidden (Admin Perms Needed)";
-                    return r.json();
-                })
-                .then(invites => {
-                    if(typeof invites === 'string') {
-                        document.getElementById('val-invite').innerText = invites;
-                    } else if (invites.length > 0) {
-                        document.getElementById('val-invite').innerText = invites[0].code; // Show first invite
-                    } else {
-                        document.getElementById('val-invite').innerText = "No Active Invites";
-                    }
-                });
+                renderTracks(data.tracks.items);
 
             } catch (err) {
-                // Fallback if Deep Fetch fails
-                document.getElementById('raw-json').innerText = "Error fetching deep data: " + err.message + "\n\n(Note: To see deep stats like member counts, the User or Bot must be permitted by Discord API to view them.)";
-                document.getElementById('val-owner').innerText = g.owner ? "You" : "Hidden";
+                console.error("Search Error:", err);
             }
         }
 
-        function closeDetail() {
-            document.getElementById('detail-panel').classList.add('hidden');
-            document.getElementById('list-panel').classList.remove('hidden');
+        function renderTracks(tracks) {
+            const container = document.getElementById('results-area');
+            
+            tracks.forEach(track => {
+                const img = track.album.images[0] ? track.album.images[0].url : '';
+                
+                const card = document.createElement('div');
+                card.className = 'song-card';
+                card.innerHTML = `
+                    <div class="album-art-wrapper">
+                        <img src="${img}" class="album-art">
+                        <div class="play-overlay">
+                            <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="song-title">${track.name}</div>
+                    <div class="artist-name">${track.artists.map(a => a.name).join(', ')}</div>
+                `;
+                
+                card.onclick = () => playTrack(track.id);
+                container.appendChild(card);
+            });
         }
 
-        function logout() {
-            history.pushState("", document.title, window.location.pathname + window.location.search);
-            location.reload();
+        function playTrack(id) {
+            const container = document.getElementById('player-container');
+            const wrapper = document.getElementById('embed-wrapper');
+            
+            container.classList.add('active');
+            wrapper.innerHTML = `
+                <iframe src="https://open.spotify.com/embed/track/${id}?utm_source=generator&theme=0" 
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            `;
         }
     </script>
 </body>

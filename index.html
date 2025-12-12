@@ -209,9 +209,8 @@
 
     <script>
         // --- CONFIGURATION ---
-        const CLIENT_ID = '162510cddb714bdc9baa0e56878eff6d'; // YOUR ID IS HERE
-        // Auto-detects the current URL (e.g. https://your-site.github.io/spotify.html)
-        // Make sure this EXACT URL is in your Dashboard Redirect URIs!
+        const CLIENT_ID = '162510cddb714bdc9baa0e56878eff6d'; 
+        // Auto-detects the current URL. Ensure this EXACT URL is in Spotify Dashboard "Redirect URIs"
         const REDIRECT_URI = window.location.href.split('#')[0]; 
         // ---------------------
 
@@ -228,12 +227,13 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('main-ui').classList.remove('hidden');
                 
-                // Clear the ugly token from the address bar
+                // Clear the token from the address bar for cleanliness
                 window.history.replaceState({}, document.title, window.location.pathname);
             } else {
                 // SETUP LOGIN BUTTON
                 document.getElementById('login-btn').onclick = () => {
                     const scopes = 'user-read-private user-read-email';
+                    // FIXED URL HERE:
                     const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scopes)}&show_dialog=true`;
                     window.location.href = authUrl;
                 };
@@ -302,6 +302,7 @@
                     <div class="artist-name">${track.artists.map(a => a.name).join(', ')}</div>
                 `;
                 
+                // Embed URL for the player
                 card.onclick = () => playTrack(track.id);
                 container.appendChild(card);
             });

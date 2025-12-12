@@ -3,162 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Dashboard</title>
+    <title>Ultimate Bot Dashboard</title>
     <style>
+        :root {
+            --bg-color: #2c2f33;
+            --card-bg: #23272a;
+            --text-color: #ffffff;
+            --accent: #5865F2;
+            --accent-hover: #4752c4;
+            --success: #43b581;
+            --danger: #ed4245;
+        }
         body {
-            background-color: #2c2f33;
-            color: #ffffff;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            margin: 0;
-            text-align: center;
         }
-        .container {
-            background-color: #23272a;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            max-width: 600px;
-            width: 90%;
-        }
-        h1 { margin-bottom: 20px; }
+        
+        /* --- UTILITIES --- */
+        .hidden { display: none !important; }
         .btn {
-            background-color: #5865F2;
+            background-color: var(--accent);
             color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
+            padding: 10px 20px;
             border-radius: 5px;
+            text-decoration: none;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s;
+            font-weight: bold;
+            transition: 0.2s;
         }
-        .btn:hover { background-color: #4752c4; }
-        .hidden { display: none; }
+        .btn:hover { background-color: var(--accent-hover); }
+        .btn-danger { background-color: var(--danger); }
+        .tag {
+            background: #202225;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #ccc;
+            margin: 2px;
+            display: inline-block;
+        }
+
+        /* --- LAYOUTS --- */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 40px;
+            padding-bottom: 40px;
+        }
+        
+        /* --- LOGIN SCREEN --- */
+        .login-card {
+            background-color: var(--card-bg);
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            margin: 100px auto;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        /* --- DASHBOARD HEADER (USER PROFILE) --- */
+        .profile-section {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
         .profile-img {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            margin-bottom: 15px;
-            border: 3px solid #5865F2;
+            border: 3px solid var(--accent);
         }
-        .server-list {
-            margin-top: 20px;
-            text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
+        .user-details h2 { margin: 0; font-size: 1.5rem; }
+        .user-details p { margin: 5px 0; color: #bbb; font-size: 0.9rem; }
+        
+        .connections-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
         }
-        .server-item {
-            padding: 10px;
-            border-bottom: 1px solid #444;
+        .connection-badge {
+            background: #18191c;
+            border: 1px solid #444;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
+            gap: 5px;
+        }
+
+        /* --- SERVER GRID --- */
+        .grid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        .server-card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .server-card:hover {
+            transform: translateY(-5px);
+            background-color: #36393f;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
         .server-icon {
-            width: 30px;
-            height: 30px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            margin-right: 10px;
-            background-color: #7289da;
+            margin-bottom: 10px;
+            background-color: #202225;
+            object-fit: cover;
         }
+        .owner-crown {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #faa61a;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- DETAIL VIEW --- */
+        .detail-view {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .detail-header {
+            display: flex;
+            gap: 25px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .detail-big-icon {
+            width: 128px;
+            height: 128px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .data-box {
+            background: #2f3136;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .data-box h3 { margin-top: 0; color: var(--accent); font-size: 1rem; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="login-section">
-        <h1>Welcome to Bot Dashboard</h1>
-        <p>Please log in to view your account info.</p>
-        <a id="login-btn" class="btn" href="https://discord.com/oauth2/authorize?client_id=1448499944884408393&response_type=token&redirect_uri=https%3A%2F%2Fbluv-developer.github.io%2FTest__Bot01_Dash%2F&scope=email+guilds+identify">
-            Login with Discord
-        </a>
+    <div id="login-section" class="container">
+        <div class="login-card">
+            <h1>🚀 Ultimate Dashboard</h1>
+            <p>Access your profile, connections, and server data.</p>
+            <br>
+            <a class="btn" href="https://discord.com/oauth2/authorize?client_id=1448499944884408393&response_type=token&redirect_uri=https%3A%2F%2Fbluv-developer.github.io%2FTest__Bot01_Dash%2F&scope=guilds.members.read+connections+gateway.connect+identify+guilds+guilds.channels.read+email+guilds.join+messages.read+activities.read+presences.write">
+                Login with Discord
+            </a>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 20px;">
+                Note: Some permissions might require whitelisting. <br>
+                If login fails, try removing 'messages.read' or 'presences.write'.
+            </p>
+        </div>
     </div>
 
-    <div class="container hidden" id="dashboard-section">
-        <h1>User Profile</h1>
-        <div id="user-content">Loading...</div>
+    <div id="dashboard-section" class="container hidden">
         
-        <h2>Your Servers</h2>
-        <div class="server-list" id="guild-content">
+        <div class="profile-section">
+            <div id="profile-loading">Loading Profile...</div>
+            <div id="profile-content" style="display:flex; gap:20px; width:100%; align-items:center;" class="hidden">
+                <img id="user-avatar" class="profile-img" src="">
+                <div class="user-details" style="flex-grow: 1;">
+                    <h2 id="user-name">Username</h2>
+                    <p id="user-email">email@example.com</p>
+                    <p id="user-id" style="font-family:monospace; color:#777;">ID: 0000000000</p>
+                    <div id="user-connections" class="connections-list"></div>
+                </div>
+                <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
-        
-        <br>
-        <button onclick="logout()" class="btn" style="background-color: #ed4245;">Logout</button>
+        </div>
+
+        <div id="server-list-view">
+            <div class="grid-header">
+                <h2>Your Servers</h2>
+                <span id="server-count" class="tag">0 Servers</span>
+            </div>
+            <div id="guild-container" class="server-grid">
+                </div>
+        </div>
+
+        <div id="server-detail-view" class="hidden">
+            <button onclick="closeDetail()" class="btn" style="margin-bottom: 20px; background:#4f545c;">&larr; Back to List</button>
+            <div id="detail-content" class="detail-view">
+                </div>
+        </div>
+
     </div>
 
     <script>
+        let globalGuilds = [];
+
         window.onload = () => {
-            // 1. Check if the URL has the fragment #access_token=...
+            // Check for login token in URL hash
             const fragment = new URLSearchParams(window.location.hash.slice(1));
             const accessToken = fragment.get('access_token');
             const tokenType = fragment.get('token_type');
 
             if (accessToken) {
-                // User is logged in
+                // Show Dashboard
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
-                
-                // Fetch User Data
-                fetch('https://discord.com/api/users/@me', {
-                    headers: { authorization: `${tokenType} ${accessToken}` }
-                })
-                .then(result => result.json())
-                .then(response => {
-                    displayUser(response);
-                    // After getting user, fetch guilds (if scope allows)
-                    fetchGuilds(tokenType, accessToken);
-                })
-                .catch(console.error);
+
+                // Load Data
+                loadUserData(tokenType, accessToken);
+                loadGuilds(tokenType, accessToken);
+                loadConnections(tokenType, accessToken); // NEW: Fetch Linked Accounts
             }
         };
 
-        function displayUser(user) {
-            const avatarUrl = user.avatar 
-                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` 
-                : 'https://cdn.discordapp.com/embed/avatars/0.png';
+        // --- 1. USER DATA ---
+        function loadUserData(type, token) {
+            fetch('https://discord.com/api/users/@me', {
+                headers: { authorization: `${type} ${token}` }
+            })
+            .then(res => res.json())
+            .then(user => {
+                document.getElementById('profile-loading').classList.add('hidden');
+                document.getElementById('profile-content').classList.remove('hidden');
 
-            const html = `
-                <img src="${avatarUrl}" class="profile-img" alt="Avatar">
-                <h3>${user.username}</h3>
-                <p>Email: ${user.email || 'Hidden'}</p>
-                <p>ID: ${user.id}</p>
-            `;
-            document.getElementById('user-content').innerHTML = html;
+                const avatar = user.avatar 
+                    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                    : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+                document.getElementById('user-avatar').src = avatar;
+                document.getElementById('user-name').innerText = `${user.username} (${user.discriminator || '0'})`;
+                document.getElementById('user-id').innerText = `ID: ${user.id}`;
+                document.getElementById('user-email').innerText = user.email ? `📧 ${user.email}` : "📧 Email Hidden";
+            });
         }
 
-        function fetchGuilds(tokenType, accessToken) {
-            fetch('https://discord.com/api/users/@me/guilds', {
-                headers: { authorization: `${tokenType} ${accessToken}` }
+        // --- 2. CONNECTIONS (Linked Accounts) ---
+        function loadConnections(type, token) {
+            fetch('https://discord.com/api/users/@me/connections', {
+                headers: { authorization: `${type} ${token}` }
             })
-            .then(result => result.json())
-            .then(guilds => {
-                const list = document.getElementById('guild-content');
-                if (guilds.message === "401: Unauthorized") {
-                    list.innerHTML = "<p>Could not load servers (Scope missing?)</p>";
+            .then(res => res.json())
+            .then(connections => {
+                const container = document.getElementById('user-connections');
+                if(!connections || connections.length === 0) {
+                    container.innerHTML = "<span class='tag'>No linked accounts found</span>";
                     return;
                 }
-                
-                list.innerHTML = guilds.map(g => {
-                    const icon = g.icon 
-                        ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`
-                        : null;
-                    const iconHtml = icon 
-                        ? `<img src="${icon}" class="server-icon">` 
-                        : `<div class="server-icon"></div>`;
-                        
-                    return `<div class="server-item">${iconHtml} <span>${g.name}</span></div>`;
-                }).join('');
+                container.innerHTML = connections.map(c => `
+                    <div class="connection-badge">
+                        <strong>${c.type.toUpperCase()}</strong>: ${c.name}
+                        ${c.verified ? '✅' : ''}
+                    </div>
+                `).join('');
             })
-            .catch(console.error);
+            .catch(err => console.log("Connections scope might be missing or denied", err));
+        }
+
+        // --- 3. SERVERS ---
+        function loadGuilds(type, token) {
+            fetch('https://discord.com/api/users/@me/guilds', {
+                headers: { authorization: `${type} ${token}` }
+            })
+            .then(res => res.json())
+            .then(guilds => {
+                globalGuilds = guilds;
+                document.getElementById('server-count').innerText = `${guilds.length} Servers`;
+                
+                const container = document.getElementById('guild-container');
+                container.innerHTML = guilds.map(g => {
+                    const icon = g.icon 
+                        ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png` 
+                        : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+                    return `
+                        <div class="server-card" onclick="openDetail('${g.id}')">
+                            ${g.owner ? '<div class="owner-crown" title="Owner">👑</div>' : ''}
+                            <img src="${icon}" class="server-icon">
+                            <div style="font-weight:bold; font-size:0.9rem;">${g.name}</div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        // --- 4. DEEP DIVE DETAIL VIEW ---
+        function openDetail(guildId) {
+            const g = globalGuilds.find(x => x.id === guildId);
+            if(!g) return;
+
+            document.getElementById('server-list-view').classList.add('hidden');
+            document.getElementById('server-detail-view').classList.remove('hidden');
+
+            const icon = g.icon 
+                ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=512` 
+                : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+            // Parse Features
+            const features = g.features && g.features.length > 0
+                ? g.features.map(f => `<span class="tag" style="background:#5865F2; color:white;">${f.replace(/_/g, ' ')}</span>`).join(' ')
+                : "No special features";
+
+            const html = `
+                <div class="detail-header">
+                    <img src="${icon}" class="detail-big-icon">
+                    <div>
+                        <h1 style="margin:0; font-size:2rem;">${g.name}</h1>
+                        <p style="color:#bbb;">ID: ${g.id}</p>
+                        ${g.owner ? '<span class="tag" style="background:#faa61a; color:black;">👑 OWNER</span>' : '<span class="tag">MEMBER / ADMIN</span>'}
+                    </div>
+                </div>
+
+                <div class="data-grid">
+                    <div class="data-box">
+                        <h3>📋 Basic Info</h3>
+                        <p><strong>Permissions Code:</strong> ${g.permissions}</p>
+                        <p><strong>Owner:</strong> ${g.owner}</p>
+                    </div>
+                    
+                    <div class="data-box" style="grid-column: span 2;">
+                        <h3>✨ Server Features</h3>
+                        <div style="line-height:1.8;">${features}</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detail-content').innerHTML = html;
+        }
+
+        function closeDetail() {
+            document.getElementById('server-detail-view').classList.add('hidden');
+            document.getElementById('server-list-view').classList.remove('hidden');
         }
 
         function logout() {
-            // Clear URL to prevent auto-relogin
             history.pushState("", document.title, window.location.pathname + window.location.search);
             location.reload();
         }
